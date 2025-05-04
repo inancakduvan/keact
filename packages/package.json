@@ -1,0 +1,29 @@
+{
+    "name": "keact",
+    "version": "0.1.0",
+    "description": "Minimal global state for React, without providers or boilerplate.",
+    "main": "dist/index.js",
+    "module": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "files": ["dist"],
+    "scripts": {
+      "build": "tsc"
+    },
+    "keywords": [
+      "react",
+      "global state",
+      "useState",
+      "hook",
+      "minimal",
+      "keact"
+    ],
+    "author": "Your Name",
+    "license": "MIT",
+    "peerDependencies": {
+      "react": ">=18.0.0"
+    },
+    "devDependencies": {
+      "typescript": "^5.0.0"
+    }
+  }
+  
