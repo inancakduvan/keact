@@ -1,0 +1,19 @@
+{
+  "name": "keact-cli",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "keact": "dist/index.js"
+  },
+  "dependencies": {
+    "ts-morph": "^25.0.1",
+    "tsx": "^4.19.4"
+  }
+}

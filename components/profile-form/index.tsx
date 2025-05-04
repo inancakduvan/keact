@@ -7,8 +7,8 @@ import { FormEvent, useEffect, useRef } from "react";
 export default function ProfileForm() {
     const router = useRouter();
 
-    const [name, setName] = useKeact('user_name', () => '');
-    const [city, setCity] = useKeact('user_city', () => '');
+    const [name, setName] = useKeact<string>('user_name', () => '');
+    const [city, setCity] = useKeact<string>('user_city', () => '');
 
     const nameInputRef = useRef<HTMLInputElement>(null);
     const cityInputRef = useRef<HTMLInputElement>(null);
