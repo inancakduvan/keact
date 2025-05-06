@@ -17,7 +17,7 @@ npm i keact
 ## ✨ Features
 
 - ✅ Zero configuration
-- 🔐 Fully type-safe with `keact.d.ts`
+- 🔑 Key-Based State Access
 - ⚡ Fast and memory-efficient
 - ♻️ Auto cleanup of unused states
 - 💡 Developer-friendly API
