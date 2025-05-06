@@ -1,6 +1,6 @@
-# 🧠 Keact
+# 🔑 Keact
 
-**Keact** is a minimalist, type-safe global state management library for React, inspired by Nuxt's `useState`. It allows you to share reactive state across components with zero boilerplate and full TypeScript support.
+**Keact** is a minimal, key-based global state manager for React. No providers, no boilerplate — just a single hook to share state across your app.
 
 ---
 
