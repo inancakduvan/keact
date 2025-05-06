@@ -7,6 +7,6 @@ declare module '@/packages/keact' {
     phone_number: {
       state_code: string;
       number: string;
-    }
+    }  
   }
 }

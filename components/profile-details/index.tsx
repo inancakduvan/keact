@@ -1,15 +1,22 @@
 "use client";
 
 import { useKeact } from "@/packages/keact";
+import { useRouter } from "next/navigation";
 
 export default function ProfileDetails() {
+    const router = useRouter();
+
     const [name] = useKeact('user_name');
     const [city] = useKeact('user_city');
     const [phoneNumber] = useKeact('phone_number');
 
-    if (!name || !city || !phoneNumber || !phoneNumber.number) {
-        return <p>Profile info is not completed yet.</p>
+    return <> {
+        (!name || !city || !phoneNumber || !phoneNumber.number) ? 
+        <p>Profile info is not completed yet.</p> 
+        : 
+        <p>{name} is from {city}. Our service will call you via number {phoneNumber.state_code} {phoneNumber.number}</p>
     }
-
-    return <p>{name} is from {city}. Our service will call you via number {phoneNumber.state_code} {phoneNumber.number}</p>
+    
+    <button onClick={() => router.push("/")}>Go back to home</button>
+    </>
 }

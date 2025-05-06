@@ -4,7 +4,7 @@ export interface KeactTypeRegistry {}
 
 const store = new Map<
   string,
-  { value: any; listeners: Set<() => void>; timeout?: NodeJS.Timeout }
+  { value: any; listeners: Set<() => void>;}
 >();
 
 export function useKeact<K extends keyof KeactTypeRegistry>(
@@ -32,27 +32,14 @@ export function useKeact<K extends keyof KeactTypeRegistry>(
 
     return () => {
       entry?.listeners.delete(callback);
-
-      // If there are no listeners left, start a delayed flush to free memory.
-      if (entry && entry.listeners.size === 0) {
-        entry.timeout = setTimeout(() => {
-          store.delete(key as string);
-        }, 10_000); // will be removed after 10 seconds
-      }
     };
   };
 
-  const value = useSyncExternalStore(subscribe, getSnapshot);
+  const value = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 
   const setValue = (v: KeactTypeRegistry[K]) => {
     const entry = store.get(key as string);
     if (entry) {
-      // If a timeout has been set for deletion before, cancel it.
-      if (entry.timeout) {
-        clearTimeout(entry.timeout);
-        delete entry.timeout;
-      }
-
       entry.value = v;
       entry.listeners.forEach((cb) => cb());
     }
