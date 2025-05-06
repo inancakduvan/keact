@@ -52,8 +52,12 @@ import { useKeact } from 'keact';
 // Initialize once
 const [username, setUsername] = useKeact('username', () => 'John Doe');
 
-// Read elsewhere (no need to re-specify type)
+// Read elsewhere globally by key
 const [username] = useKeact('username');
+
+// Also set elsewhere globally by key
+const [username, setUsername] = useKeact('username');
+setUsername('George Brown');
 ```
 
 ---
@@ -70,4 +74,4 @@ MIT
 
 ---
 
-Made with ❤️ by İnanç.
+Made with ❤️ by **İnanç**.
