@@ -26,23 +26,7 @@ npm i keact
 
 ## 🔧 Usage
 
-### 1. Define Your Global State Types
-
-Create a `keact.d.ts` file in your source directory (e.g., `types/keact.d.ts`) and declare your keys and their types:
-
-```ts
-// types/keact.d.ts
-import { KeactTypeRegistry } from 'keact';
-
-declare module 'keact' {
-  interface KeactTypeRegistry {
-    username: string;
-    count: number;
-  }
-}
-```
-
-### 2. Initialize and Use State
+### 1. Initialize and Use State
 
 ```ts
 // In any component
@@ -58,6 +42,22 @@ const [username] = useKeact('username');
 // Also set elsewhere globally by key
 const [username, setUsername] = useKeact('username');
 setUsername('George Brown');
+```
+
+### 2. If you need type-safety
+
+Create a `keact.d.ts` file in your source directory (e.g., `types/keact.d.ts`) and declare your keys and their types:
+
+```ts
+// types/keact.d.ts
+import { KeactTypeRegistry } from 'keact';
+
+declare module 'keact' {
+  interface KeactTypeRegistry {
+    username: string;
+    count: number;
+  }
+}
 ```
 
 ---
