@@ -1,6 +1,6 @@
-import { KeactTypeRegistry } from '@/packages/keact';
+import { KeactTypeRegistry } from '@inancakduvan/keact';
 
-declare module '@/packages/keact' {
+declare module '@inancakduvan/keact' {
   interface KeactTypeRegistry {
     user_name: string;
     user_city: string;

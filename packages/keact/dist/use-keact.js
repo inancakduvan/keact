@@ -10,7 +10,7 @@ exposeStoreToWindow();
 export function useKeact(key, initializer) {
     const isInitialized = store.has(key);
     if (!isInitialized) {
-        const initialValue = initializer === null || initializer === void 0 ? void 0 : initializer();
+        const initialValue = initializer?.();
         store.set(key, {
             value: initialValue,
             listeners: new Set(),
@@ -18,13 +18,13 @@ export function useKeact(key, initializer) {
     }
     const getSnapshot = () => {
         const entry = store.get(key);
-        return entry === null || entry === void 0 ? void 0 : entry.value;
+        return entry?.value;
     };
     const subscribe = (callback) => {
         const entry = store.get(key);
-        entry === null || entry === void 0 ? void 0 : entry.listeners.add(callback);
+        entry?.listeners.add(callback);
         return () => {
-            entry === null || entry === void 0 ? void 0 : entry.listeners.delete(callback);
+            entry?.listeners.delete(callback);
         };
     };
     const value = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useKeact } from "@/packages/keact";
+import { useKeact } from "@inancakduvan/keact";
 import { useRouter } from "next/navigation";
 import { FormEvent, useRef } from "react";
 
