@@ -7,7 +7,7 @@
 ## 🚀 Installation
 
 ```bash
-npm i keact
+nnpm i @inancakduvan/keact
 ```
 
 > Requires React 18 or higher.
