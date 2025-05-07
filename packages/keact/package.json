@@ -1,0 +1,17 @@
+{
+    "name": "@inancakduvan/keact",
+    "version": "1.0.0",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+      "build": "tsc"
+    },
+    "author": "İnanç Akduvan",
+    "license": "MIT",
+    "keywords": ["react", "state", "global", "store", "keact"],
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/inancakduvan/keact"
+    }
+  }
+  
