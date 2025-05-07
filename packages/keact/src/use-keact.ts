@@ -7,6 +7,15 @@ const store = new Map<
   { value: any; listeners: Set<() => void>;}
 >();
 
+const exposeStoreToWindow = () => {
+  // Expose store to window in development
+  if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+    (window as any).__KEACT_STORE__ = store;
+  }
+}
+
+exposeStoreToWindow();
+
 export function useKeact<K extends keyof KeactTypeRegistry>(
   key: K,
   initializer?: () => KeactTypeRegistry[K]
@@ -42,6 +51,8 @@ export function useKeact<K extends keyof KeactTypeRegistry>(
     if (entry) {
       entry.value = v;
       entry.listeners.forEach((cb) => cb());
+
+      exposeStoreToWindow();
     }
   };
 
