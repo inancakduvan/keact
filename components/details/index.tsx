@@ -1,6 +1,6 @@
 'use client';
 
-import { KeactContext, useKeact } from "@/packages/keact/src"
+import { useKeact } from "@/packages/keact/src"
 import Profile from "../profile";
 import About from "../about";
 import Link from "next/link";
@@ -16,14 +16,12 @@ export default function Details() {
         Here are some details: <br />
         <b>First name:</b> { firstName }, is Loggedin? = {isUserLoggedIn.toString()}
 
-        <KeactContext name="profile">
-            <Profile />
-        </KeactContext>
+        <Profile />
 
         <About />
 
         <br /><br />
-        
+
         <Link href="/"> Go to home</Link>
     </div>
 }
