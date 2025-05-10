@@ -16,6 +16,15 @@ type ContextKeys = Exclude<keyof KeactTypeRegistry, GlobalKeys>;
 const globalStore: Record<string, any> = {};
 const listeners: Record<string, Set<() => void>> = {};
 
+const exposeStoreToWindow = () => {
+  // Expose store to window in development
+  if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+    (window as any).__KEACT_STORE__ = globalStore;
+  }
+}
+
+exposeStoreToWindow();
+
 // Context-specific stores and listeners
 const contextStores: Record<string, Record<string, any>> = {};
 const contextListeners: Record<string, Record<string, Set<() => void>>> = {};
@@ -112,6 +121,8 @@ export function useKeact(
       globalStore[key] = nextValue;
       listeners[key]?.forEach(fn => fn());
     }
+
+    exposeStoreToWindow();
   };
 
   return [getValue(), setValue];
