@@ -1,6 +1,6 @@
 "use client";
 
-import { useKeact } from "@inancakduvan/keact";
+import { useKeact } from "@/packages/keact";
 import { useRouter } from "next/navigation";
 
 export default function ProfileDetails() {

@@ -1,11 +1,11 @@
 import { useSyncExternalStore } from 'react';
 
-export interface KeactTypeRegistry {}
+export interface KeactTypeRegistry {};
 
-const store = new Map<
-  string,
-  { value: any; listeners: Set<() => void>;}
->();
+type Listener = () => void;
+
+const store = new Map<string, unknown>();
+const listeners = new Map<string, Set<Listener>>();
 
 const exposeStoreToWindow = () => {
   // Expose store to window in development
@@ -16,44 +16,43 @@ const exposeStoreToWindow = () => {
 
 exposeStoreToWindow();
 
+function subscribe(key: string, callback: Listener): () => void {
+  if (!listeners.has(key)) {
+    listeners.set(key, new Set());
+  }
+  listeners.get(key)!.add(callback);
+
+  return () => {
+    listeners.get(key)!.delete(callback);
+    if (listeners.get(key)!.size === 0) {
+      listeners.delete(key);
+    }
+  };
+}
+
+function getSnapshot<T>(key: string): T {
+  return store.get(key) as T;
+}
+
 export function useKeact<K extends keyof KeactTypeRegistry>(
   key: K,
-  initializer?: () => KeactTypeRegistry[K]
-): [KeactTypeRegistry[K], (v: KeactTypeRegistry[K]) => void] {
-  const isInitialized = store.has(key as string);
-
-  if (!isInitialized) {
-    const initialValue = initializer?.();
-    store.set(key as string, {
-      value: initialValue,
-      listeners: new Set(),
-    });
+  initialValue?: KeactTypeRegistry[K]
+): [KeactTypeRegistry[K], (val: KeactTypeRegistry[K]) => void] {
+  if (!store.has(key) && initialValue !== undefined) {
+    store.set(key as string, initialValue);
   }
 
-  const getSnapshot = () => {
-    const entry = store.get(key as string);
-    return entry?.value as KeactTypeRegistry[K];
-  };
+  const value = useSyncExternalStore(
+    (cb) => subscribe(key as string, cb),
+    () => getSnapshot<KeactTypeRegistry[K]>(key as string),
+    () => getSnapshot<KeactTypeRegistry[K]>(key as string)
+  );
 
-  const subscribe = (callback: () => void) => {
-    const entry = store.get(key as string);
-    entry?.listeners.add(callback);
+  const setValue = (val: KeactTypeRegistry[K]) => {
+    store.set(key as string, val);
+    listeners.get(key as string)?.forEach((cb) => cb());
 
-    return () => {
-      entry?.listeners.delete(callback);
-    };
-  };
-
-  const value = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
-
-  const setValue = (v: KeactTypeRegistry[K]) => {
-    const entry = store.get(key as string);
-    if (entry) {
-      entry.value = v;
-      entry.listeners.forEach((cb) => cb());
-
-      exposeStoreToWindow();
-    }
+    exposeStoreToWindow();
   };
 
   return [value, setValue];
