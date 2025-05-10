@@ -1,4 +1,6 @@
-# 🔑 Keact
+
+
+# <img src="https://res.cloudinary.com/dnjvyciqt/image/upload/v1746881779/mdikcitxddrz7juqkt9z.png" alt="Preview" style="width: 20px; transform: translateY(6px); margin-right: 8px;" /> Keact
 
 **Keact** is a minimal, key-based global state manager for React. No providers, no boilerplate — just a single hook to share state across your app.
 
@@ -17,9 +19,8 @@ npm i @inancakduvan/keact
 ## ✨ Features
 
 - ✅ Zero configuration
-- 🔑 Key-Based State Access
+- 🔑 Key-Based Global State Access
 - ⚡ Fast and memory-efficient
-- ♻️ Auto cleanup of unused states
 - 💡 Developer-friendly API
 
 ---
