@@ -1,6 +1,7 @@
 'use client';
 
 import { useKeact } from "@/packages/keact/src"
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useRef } from "react";
 
@@ -29,5 +30,10 @@ export default function Login() {
         <input ref={firstNameInputRef} placeholder="First Name" />
 
         <button type="submit">Login</button>
+
+        <br /> <br />
+        <Link href={"/details"}>
+         Go to details
+        </Link>
     </form>
 }

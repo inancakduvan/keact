@@ -1,10 +1,10 @@
 'use client';
 
 import { useKeact } from "@/packages/keact/src"
-import { useKeactContext } from "@/packages/keact/src/keact";
 
 export default function Profile() {
-    const [profileThemeColor, setProfileThemeColor] = useKeactContext('profile_theme_color', 'profile', {
+    const [profileThemeColor, setProfileThemeColor] = useKeact('profile_theme_color', {
+        context: 'profile',
         initialValue: 'blue'
     });
 
