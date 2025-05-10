@@ -1,6 +1,6 @@
 
 
-# <img src="https://res.cloudinary.com/dnjvyciqt/image/upload/v1746882280/b7wlniich4h1fdgpddlv.png" alt="Preview" style="width: 20px; transform: translateY(6px); margin-right: 8px;" /> Keact
+# <img src="https://res.cloudinary.com/dnjvyciqt/image/upload/v1746882540/taelwwhffuou9qlblvy1.png" alt="Preview" style="width: 20px; transform: translateY(6px); margin-right: 8px;" /> Keact
 
 **Keact** is a minimal, key-based global state manager for React. No providers, no boilerplate — just a single hook to share state across your app.
 
@@ -63,9 +63,9 @@ declare module '@inancakduvan/keact' {
 
 ---
 
-## 🧼 Automatic Cleanup
+## 🧼 Memory efficiency
 
-Keact automatically removes state from memory if no component is using it anymore. This ensures memory efficiency even in large apps.
+Keact adds the state into store only when it is needed. It will not consume memory until it is needed to use.
 
 ---
 
