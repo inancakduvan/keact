@@ -1,12 +1,14 @@
-import { KeactTypeRegistry } from '@/packages/keact';
+import { KeactTypeRegistry, KeactContextTypeRegistry } from '@/packages/keact/src';
 
-declare module '@/packages/keact' {
+declare module '@/packages/keact/src' {
   interface KeactTypeRegistry {
-    user_name: string;
-    user_city: string;
-    phone_number: {
-      state_code: string;
-      number: string;
-    }  
+    first_name: string;
+    is_user_logged_in: boolean;
+  }
+
+  interface KeactContextTypeRegistry {
+    'profile': {
+      profile_theme_color: string
+    }
   }
 }

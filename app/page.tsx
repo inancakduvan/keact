@@ -1,9 +1,9 @@
-import ProfileForm from "@/components/profile-form";
+import Login from "@/components/login";
 
 export default function Home() {
   return (
     <div className="flex item-center justify-center">
-      <ProfileForm />
+      <Login />
     </div>
   );
 }
