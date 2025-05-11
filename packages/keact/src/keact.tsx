@@ -80,7 +80,7 @@ export function useKeact<
 ] {
   const contextFromTree = useContext(KeactCurrentContext);
   const context = options?.context ?? contextFromTree;
-  const isContext = context !== undefined;
+  const isContext = context !== undefined && context !== null;
 
   // UYARI: context dışındayken context'li state'e erişim varsa engelle
   if (options?.context && contextFromTree !== options.context) {
