@@ -2,21 +2,15 @@ import React, {
   createContext,
   useContext,
   useRef,
+  ReactNode,
   useSyncExternalStore,
-  ReactNode
-} from 'react';
+} from "react";
 
-// Type definitions
+// ========== TYPE DEFINITIONS ==========
 export interface KeactTypeRegistry {}
 export interface KeactContextTypeRegistry {}
 
-// Type helpers
-type KeyofKeactTypeRegistry = keyof KeactTypeRegistry;
-type ValueOfKeactTypeRegistry<K extends KeyofKeactTypeRegistry> = K extends keyof KeactTypeRegistry
-  ? KeactTypeRegistry[K]
-  : unknown;
-
-// Stores
+// ========== INTERNAL STATE ==========
 const globalStore: Record<string, any> = {};
 const globalListeners: Record<string, Set<() => void>> = {};
 
@@ -33,118 +27,153 @@ const exposeStoreToWindow = () => {
 
 exposeStoreToWindow();
 
-// Context Name Provider
-const KeactContextValues = createContext<string | null>(null);
+// ========== CONTEXT HANDLING ==========
+const KeactCurrentContext = createContext<string | null>(null);
 
-type KeactContextProps = {
-  name: string;
-  children: ReactNode;
-};
-
-export function KeactContext({ name, children }: KeactContextProps) {
-  if (!contextStores[name]) contextStores[name] = {};
-  if (!contextListeners[name]) contextListeners[name] = {};
-
-  return (
-    <KeactContextValues.Provider value={name}>
-      {children}
-    </KeactContextValues.Provider>
-  );
+export function KeactContext({ name, children }: { name: string; children: ReactNode }) {
+  const initialized = useRef(false);
+  if (!initialized.current) {
+    contextStores[name] ||= {};
+    contextListeners[name] ||= {};
+    initialized.current = true;
+  }
+  return <KeactCurrentContext.Provider value={name}>{children}</KeactCurrentContext.Provider>;
 }
 
-// Main Hook
-type KeactOptions<T> = {
-  initialValue?: T;
-  context?: string;
-};
-
-export function useKeact<K extends string>(
-  key: K extends KeyofKeactTypeRegistry ? K : string,
-  options?: KeactOptions<K extends KeyofKeactTypeRegistry ? ValueOfKeactTypeRegistry<K> : any>
+// ========== useKeact HOOK ==========
+export function useKeact<
+  K extends string,
+  C extends string | undefined = undefined
+>(
+  key: C extends keyof KeactContextTypeRegistry
+    ? K extends keyof KeactContextTypeRegistry[C]
+      ? K
+      : never
+    : K,
+  options?: {
+    initialValue?: C extends keyof KeactContextTypeRegistry
+      ? K extends keyof KeactContextTypeRegistry[C]
+        ? KeactContextTypeRegistry[C][K]
+        : any
+      : K extends keyof KeactTypeRegistry
+        ? KeactTypeRegistry[K]
+        : any;
+    context?: C;
+  }
 ): [
-  K extends KeyofKeactTypeRegistry ? ValueOfKeactTypeRegistry<K> : any,
-  (value: K extends KeyofKeactTypeRegistry ? ValueOfKeactTypeRegistry<K> : any) => void
+  C extends keyof KeactContextTypeRegistry
+    ? K extends keyof KeactContextTypeRegistry[C]
+      ? KeactContextTypeRegistry[C][K]
+      : any
+    : K extends keyof KeactTypeRegistry
+      ? KeactTypeRegistry[K]
+      : any,
+  (
+    value: C extends keyof KeactContextTypeRegistry
+      ? K extends keyof KeactContextTypeRegistry[C]
+        ? KeactContextTypeRegistry[C][K]
+        : any
+      : K extends keyof KeactTypeRegistry
+        ? KeactTypeRegistry[K]
+        : any
+  ) => void
 ] {
-  const declaredContext = options?.context;
-  const activeContext = useContext(KeactContextValues);
+  const contextFromTree = useContext(KeactCurrentContext);
+  const context = options?.context ?? contextFromTree;
+  const isContext = context !== undefined && context !== null;
 
-  const isContextBased = declaredContext !== undefined || activeContext !== null;
-  const contextName = declaredContext ?? activeContext;
-
-  // Enforce: if context is provided, must be inside corresponding Provider
-  if (declaredContext && declaredContext !== activeContext) {
+  // UYARI: context dışındayken context'li state'e erişim varsa engelle
+  if (options?.context && contextFromTree !== options.context) {
     throw new Error(
-      `[Keact] useKeact(key: "${key}") was called with context "${declaredContext}" outside of its corresponding <KeactContext name="${declaredContext}">`
+      `Cannot access Keact context "${options.context}" outside of its provider.`
     );
   }
 
-  const store = isContextBased && contextName
-    ? (contextStores[contextName] ??= {})
-    : globalStore;
-
-  const listeners = isContextBased && contextName
-    ? (contextListeners[contextName] ??= {})[key] ??= new Set()
-    : (globalListeners[key] ??= new Set());
-
-  // Initialize default value
-  const initializedRef = useRef(false);
-  if (!initializedRef.current && store[key] === undefined && options?.initialValue !== undefined) {
-    store[key] = options.initialValue;
-    initializedRef.current = true;
-  }
-
   const subscribe = (callback: () => void) => {
-    listeners.add(callback);
-    return () => listeners.delete(callback);
+    if (isContext) {
+      contextListeners[context] ||= {};
+      contextListeners[context][key] ||= new Set();
+      contextListeners[context][key].add(callback);
+      return () => contextListeners[context][key].delete(callback);
+    } else {
+      globalListeners[key] ||= new Set();
+      globalListeners[key].add(callback);
+      return () => globalListeners[key].delete(callback);
+    }
   };
 
-  const getSnapshot = () => store[key];
+  const getSnapshot = () => {
+    if (isContext) {
+      if (!(context in contextStores)) return options?.initialValue;
+      return contextStores[context][key] ?? options?.initialValue;
+    } else {
+      return globalStore[key] ?? options?.initialValue;
+    }
+  };
 
   const value = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 
-  const setValue = (newValue: any) => {
-    const nextValue = typeof newValue === 'function' ? newValue(store[key]) : newValue;
-    store[key] = nextValue;
-    listeners.forEach(fn => fn());
+  const setValue = (val: any) => {
+    const next = typeof val === "function" ? val(value) : val;
 
-    exposeStoreToWindow();
+    if (isContext) {
+      if (!(context in contextStores)) return;
+      contextStores[context][key] = next;
+      contextListeners[context]?.[key]?.forEach((l) => l());
+    } else {
+      globalStore[key] = next;
+      globalListeners[key]?.forEach((l) => l());
+    }
   };
 
   return [value, setValue];
 }
 
-// Utility: Global store getters/setters
-export function getKeactValue<K extends KeyofKeactTypeRegistry>(key: K): ValueOfKeactTypeRegistry<K> {
+// ========== GETTERS & SETTERS ==========
+export function getKeactValue<K extends keyof KeactTypeRegistry>(key: K): KeactTypeRegistry[K] {
   return globalStore[key];
 }
 
-export function setKeactValue<K extends KeyofKeactTypeRegistry>(key: K, value: ValueOfKeactTypeRegistry<K>) {
-  globalStore[key] = typeof value === 'function' ? value(globalStore[key]) : value;
-  globalListeners[key]?.forEach(fn => fn());
+export function setKeactValue<K extends keyof KeactTypeRegistry>(
+  key: K,
+  value: KeactTypeRegistry[K]
+): void {
+  globalStore[key] = value;
+  globalListeners[key]?.forEach((l) => l());
 }
 
-// Utility: Context store getters/setters
-export function getKeactContextValue<C extends string, K extends string>(contextName: C, key: K) {
+export function getKeactContextValue<C extends string, K extends string>(
+  contextName: C,
+  key: K
+): C extends keyof KeactContextTypeRegistry
+  ? K extends keyof KeactContextTypeRegistry[C]
+    ? KeactContextTypeRegistry[C][K]
+    : unknown
+  : unknown {
   return contextStores[contextName]?.[key];
 }
 
 export function setKeactContextValue<C extends string, K extends string>(
   contextName: C,
   key: K,
-  value: any
-) {
-  const store = contextStores[contextName] ??= {};
-  store[key] = typeof value === 'function' ? value(store[key]) : value;
-  contextListeners[contextName]?.[key]?.forEach(fn => fn());
+  value: C extends keyof KeactContextTypeRegistry
+    ? K extends keyof KeactContextTypeRegistry[C]
+      ? KeactContextTypeRegistry[C][K]
+      : unknown
+    : unknown
+): void {
+  contextStores[contextName] ||= {};
+  contextStores[contextName][key] = value;
+  contextListeners[contextName]?.[key]?.forEach((l) => l());
 }
 
-// Reset functions for test/debug
-export function resetKeact(): void {
-  Object.keys(globalStore).forEach(key => delete globalStore[key]);
-  Object.keys(globalListeners).forEach(key => globalListeners[key].clear());
+// ========== RESET HELPERS ==========
+export function resetKeact() {
+  Object.keys(globalStore).forEach((k) => delete globalStore[k]);
+  Object.values(globalListeners).forEach((set) => set.clear());
 }
 
-export function resetKeactContext(contextName: string): void {
+export function resetKeactContext(contextName: string) {
   delete contextStores[contextName];
   delete contextListeners[contextName];
 }
