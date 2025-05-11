@@ -4,6 +4,7 @@ import { KeactContext, useKeact } from "@/packages/keact/src"
 import Profile from "../profile";
 import About from "../about";
 import Link from "next/link";
+import { ProfileDesc } from "../profile-desc";
 
 export default function Details() {
     const [isUserLoggedIn] = useKeact('is_user_logged_in', {
@@ -20,7 +21,10 @@ export default function Details() {
             <Profile />
         </KeactContext>
 
-        <About />
+        <KeactContext name="about">
+            <About />
+            <ProfileDesc />
+        </KeactContext>
 
         <br /><br />
 

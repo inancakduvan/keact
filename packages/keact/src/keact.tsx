@@ -99,9 +99,16 @@ export function useKeact<
 
   const getSnapshot = () => {
     if (isContext) {
-      return contextStores[context]?.[key] ?? options?.initialValue;
+      contextStores[context] ||= {};
+      if (!(key in contextStores[context]) && options?.initialValue !== undefined) {
+        contextStores[context][key] = options.initialValue;
+      }
+      return contextStores[context][key];
     } else {
-      return globalStore[key] ?? options?.initialValue;
+      if (!(key in globalStore) && options?.initialValue !== undefined) {
+        globalStore[key] = options.initialValue;
+      }
+      return globalStore[key];
     }
   };
 
@@ -118,6 +125,8 @@ export function useKeact<
       globalStore[key] = next;
       globalListeners[key]?.forEach((l) => l());
     }
+
+    exposeStoreToWindow();
   };
 
   return [value, setValue];

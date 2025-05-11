@@ -10,5 +10,8 @@ declare module '@/packages/keact/src' {
     profile: {
       profile_theme_color: string;
     };
+    about: {
+      profile_description: string;
+    };
   }
 }
