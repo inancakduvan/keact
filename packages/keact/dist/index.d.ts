@@ -1,1 +1,1 @@
-export * from './use-keact';
+export * from './keact';
