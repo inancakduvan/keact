@@ -1,5 +1,10 @@
-import { useState, useEffect } from 'react';
-import { useSyncExternalStore } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useRef,
+  useSyncExternalStore,
+  ReactNode
+} from 'react';
 
 // Type definitions
 export interface KeactTypeRegistry {}
@@ -7,212 +12,139 @@ export interface KeactContextTypeRegistry {}
 
 // Type helpers
 type KeyofKeactTypeRegistry = keyof KeactTypeRegistry;
-type ValueOfKeactTypeRegistry<K extends KeyofKeactTypeRegistry> = K extends keyof KeactTypeRegistry 
-  ? KeactTypeRegistry[K] 
+type ValueOfKeactTypeRegistry<K extends KeyofKeactTypeRegistry> = K extends keyof KeactTypeRegistry
+  ? KeactTypeRegistry[K]
   : unknown;
 
-// Define global store
+// Stores
 const globalStore: Record<string, any> = {};
-const listeners: Record<string, Set<() => void>> = {};
+const globalListeners: Record<string, Set<() => void>> = {};
 
-// Context-specific stores
 const contextStores: Record<string, Record<string, any>> = {};
 const contextListeners: Record<string, Record<string, Set<() => void>>> = {};
 
-// Main hook
+const exposeStoreToWindow = () => {
+  // Expose store to window in development
+  if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+    (window as any).__KEACT_GLOBAL_STORE__ = globalStore;
+    (window as any).__KEACT_CONTEXT_STORES__ = contextStores;
+  }
+}
+
+exposeStoreToWindow();
+
+// Context Name Provider
+const KeactContextValues = createContext<string | null>(null);
+
+type KeactContextProps = {
+  name: string;
+  children: ReactNode;
+};
+
+export function KeactContext({ name, children }: KeactContextProps) {
+  if (!contextStores[name]) contextStores[name] = {};
+  if (!contextListeners[name]) contextListeners[name] = {};
+
+  return (
+    <KeactContextValues.Provider value={name}>
+      {children}
+    </KeactContextValues.Provider>
+  );
+}
+
+// Main Hook
 type KeactOptions<T> = {
   initialValue?: T;
   context?: string;
 };
 
 export function useKeact<K extends string>(
-  key: K extends KeyofKeactTypeRegistry ? K : string, 
+  key: K extends KeyofKeactTypeRegistry ? K : string,
   options?: KeactOptions<K extends KeyofKeactTypeRegistry ? ValueOfKeactTypeRegistry<K> : any>
 ): [
   K extends KeyofKeactTypeRegistry ? ValueOfKeactTypeRegistry<K> : any,
   (value: K extends KeyofKeactTypeRegistry ? ValueOfKeactTypeRegistry<K> : any) => void
 ] {
-  const [contextName] = useState(options?.context); // Use provided context name
+  const declaredContext = options?.context;
+  const activeContext = useContext(KeactContextValues);
 
-  const isContextBased = contextName !== undefined;
+  const isContextBased = declaredContext !== undefined || activeContext !== null;
+  const contextName = declaredContext ?? activeContext;
 
-  // Handle initialization and store updates
-  useEffect(() => {
-    if (isContextBased) {
-      // Initialize context-specific store
-      if (!contextStores[contextName]) {
-        contextStores[contextName] = {};
-        contextListeners[contextName] = {};
-      }
+  // Enforce: if context is provided, must be inside corresponding Provider
+  if (declaredContext && declaredContext !== activeContext) {
+    throw new Error(
+      `[Keact] useKeact(key: "${key}") was called with context "${declaredContext}" outside of its corresponding <KeactContext name="${declaredContext}">`
+    );
+  }
 
-      // Initialize listeners for this context and key
-      if (!contextListeners[contextName][key]) {
-        contextListeners[contextName][key] = new Set();
-      }
+  const store = isContextBased && contextName
+    ? (contextStores[contextName] ??= {})
+    : globalStore;
 
-      // Initialize state if it doesn't exist
-      if (contextStores[contextName][key] === undefined && options?.initialValue !== undefined) {
-        contextStores[contextName][key] = options.initialValue;
-      }
+  const listeners = isContextBased && contextName
+    ? (contextListeners[contextName] ??= {})[key] ??= new Set()
+    : (globalListeners[key] ??= new Set());
 
-      // Add listener
-      const listenerSet = contextListeners[contextName][key];
-      const listener = () => {};
-      listenerSet.add(listener);
-
-      // Cleanup
-      return () => {
-        listenerSet.delete(listener);
-      };
-    } else {
-      // Initialize listeners for global store
-      if (!listeners[key]) {
-        listeners[key] = new Set();
-      }
-
-      // Initialize state if it doesn't exist
-      if (globalStore[key] === undefined && options?.initialValue !== undefined) {
-        globalStore[key] = options.initialValue;
-      }
-
-      // Add listener
-      const listenerSet = listeners[key];
-      const listener = () => {};
-      listenerSet.add(listener);
-
-      // Cleanup
-      return () => {
-        listenerSet.delete(listener);
-      };
-    }
-  }, [key, contextName, isContextBased]);
-
-  // Getter using useSyncExternalStore
-  const getValue = () => {
-    return isContextBased
-      ? contextStores[contextName]?.[key] !== undefined
-        ? contextStores[contextName][key]
-        : options?.initialValue
-      : globalStore[key] !== undefined
-      ? globalStore[key]
-      : options?.initialValue;
-  };
+  // Initialize default value
+  const initializedRef = useRef(false);
+  if (!initializedRef.current && store[key] === undefined && options?.initialValue !== undefined) {
+    store[key] = options.initialValue;
+    initializedRef.current = true;
+  }
 
   const subscribe = (callback: () => void) => {
-    if (isContextBased) {
-      contextListeners[contextName][key]?.add(callback);
-      return () => contextListeners[contextName][key]?.delete(callback);
-    } else {
-      listeners[key]?.add(callback);
-      return () => listeners[key]?.delete(callback);
-    }
+    listeners.add(callback);
+    return () => listeners.delete(callback);
   };
 
-  // Using useSyncExternalStore for synchronization
-  const value = useSyncExternalStore(subscribe, getValue, getValue);
+  const getSnapshot = () => store[key];
 
-  // Setter
+  const value = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+
   const setValue = (newValue: any) => {
-    if (isContextBased) {
-      if (!contextStores[contextName]) {
-        contextStores[contextName] = {};
-      }
-      
-      const nextValue = typeof newValue === 'function'
-        ? newValue(contextStores[contextName][key])
-        : newValue;
-        
-      contextStores[contextName][key] = nextValue;
-      
-      // Notify listeners
-      contextListeners[contextName]?.[key].forEach(listener => listener());
-    } else {
-      const nextValue = typeof newValue === 'function'
-        ? newValue(globalStore[key])
-        : newValue;
-        
-      globalStore[key] = nextValue;
-      
-      // Notify listeners
-      listeners[key]?.forEach(listener => listener());
-    }
+    const nextValue = typeof newValue === 'function' ? newValue(store[key]) : newValue;
+    store[key] = nextValue;
+    listeners.forEach(fn => fn());
+
+    exposeStoreToWindow();
   };
 
   return [value, setValue];
 }
 
-// Utility functions
-export function getKeactValue<K extends KeyofKeactTypeRegistry>(
-  key: K
-): ValueOfKeactTypeRegistry<K> {
+// Utility: Global store getters/setters
+export function getKeactValue<K extends KeyofKeactTypeRegistry>(key: K): ValueOfKeactTypeRegistry<K> {
   return globalStore[key];
 }
 
-export function setKeactValue<K extends KeyofKeactTypeRegistry>(
-  key: K, 
-  value: ValueOfKeactTypeRegistry<K>
-): void {
-  const nextValue = typeof value === 'function'
-    ? value(globalStore[key])
-    : value;
-    
-  globalStore[key] = nextValue;
-  
-  if (listeners[key]) {
-    listeners[key].forEach(listener => listener());
-  }
+export function setKeactValue<K extends KeyofKeactTypeRegistry>(key: K, value: ValueOfKeactTypeRegistry<K>) {
+  globalStore[key] = typeof value === 'function' ? value(globalStore[key]) : value;
+  globalListeners[key]?.forEach(fn => fn());
 }
 
-export function getKeactContextValue<C extends string, K extends string>(
-  contextName: C,
-  key: K
-): C extends keyof KeactContextTypeRegistry
-  ? K extends keyof KeactContextTypeRegistry[C]
-    ? KeactContextTypeRegistry[C][K]
-    : unknown
-  : unknown {
+// Utility: Context store getters/setters
+export function getKeactContextValue<C extends string, K extends string>(contextName: C, key: K) {
   return contextStores[contextName]?.[key];
 }
 
 export function setKeactContextValue<C extends string, K extends string>(
   contextName: C,
   key: K,
-  value: C extends keyof KeactContextTypeRegistry
-    ? K extends keyof KeactContextTypeRegistry[C]
-      ? KeactContextTypeRegistry[C][K]
-      : unknown
-    : unknown
-): void {
-  if (!contextStores[contextName]) {
-    contextStores[contextName] = {};
-  }
-  
-  const nextValue = typeof value === 'function'
-    ? value(contextStores[contextName][key])
-    : value;
-    
-  contextStores[contextName][key] = nextValue;
-  
-  if (contextListeners[contextName]?.[key]) {
-    contextListeners[contextName][key].forEach(listener => listener());
-  }
+  value: any
+) {
+  const store = contextStores[contextName] ??= {};
+  store[key] = typeof value === 'function' ? value(store[key]) : value;
+  contextListeners[contextName]?.[key]?.forEach(fn => fn());
 }
 
-// Reset functions for testing
+// Reset functions for test/debug
 export function resetKeact(): void {
-  Object.keys(globalStore).forEach(key => {
-    delete globalStore[key];
-  });
-  Object.keys(listeners).forEach(key => {
-    listeners[key].clear();
-  });
+  Object.keys(globalStore).forEach(key => delete globalStore[key]);
+  Object.keys(globalListeners).forEach(key => globalListeners[key].clear());
 }
 
 export function resetKeactContext(contextName: string): void {
-  if (contextStores[contextName]) {
-    delete contextStores[contextName];
-  }
-  if (contextListeners[contextName]) {
-    delete contextListeners[contextName];
-  }
+  delete contextStores[contextName];
+  delete contextListeners[contextName];
 }
