@@ -18,13 +18,11 @@ const contextStores: Record<string, Record<string, any>> = {};
 const contextListeners: Record<string, Record<string, Set<() => void>>> = {};
 
 const exposeStoreToWindow = () => {
-  // Expose store to window in development
   if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
     (window as any).__KEACT_GLOBAL_STORE__ = globalStore;
     (window as any).__KEACT_CONTEXT_STORES__ = contextStores;
   }
-}
-
+};
 exposeStoreToWindow();
 
 // ========== CONTEXT HANDLING ==========
@@ -79,14 +77,11 @@ export function useKeact<
   ) => void
 ] {
   const contextFromTree = useContext(KeactCurrentContext);
-  const context = options?.context ?? contextFromTree;
-  const isContext = context !== undefined && context !== null;
+  const context = options?.context ?? null;
+  const isContext = context !== null;
 
-  // UYARI: context dışındayken context'li state'e erişim varsa engelle
-  if (options?.context && contextFromTree !== options.context) {
-    throw new Error(
-      `Cannot access Keact context "${options.context}" outside of its provider.`
-    );
+  if (isContext && contextFromTree !== context) {
+    throw new Error(`Cannot access Keact context "${context}" outside of its provider.`);
   }
 
   const subscribe = (callback: () => void) => {
@@ -104,8 +99,7 @@ export function useKeact<
 
   const getSnapshot = () => {
     if (isContext) {
-      if (!(context in contextStores)) return options?.initialValue;
-      return contextStores[context][key] ?? options?.initialValue;
+      return contextStores[context]?.[key] ?? options?.initialValue;
     } else {
       return globalStore[key] ?? options?.initialValue;
     }
@@ -117,7 +111,7 @@ export function useKeact<
     const next = typeof val === "function" ? val(value) : val;
 
     if (isContext) {
-      if (!(context in contextStores)) return;
+      contextStores[context] ||= {};
       contextStores[context][key] = next;
       contextListeners[context]?.[key]?.forEach((l) => l());
     } else {
