@@ -71,7 +71,7 @@ declare module '@inancakduvan/keact' {
 Use `KeactContext` to isolate state between parts of your app:
 
 ```tsx
-import { KeactContext, useKeact } from "keact";
+import { KeactContext, useKeact } from "@inancakduvan/keact";
 
 function ProfilePage() {
   return (
