@@ -41,4 +41,5 @@ yarn-error.log*
 next-env.d.ts
 
 # packages
+/packages/keact/node_modules
 /packages/keact/dist

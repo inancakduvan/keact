@@ -1,17 +1,25 @@
 {
     "name": "@inancakduvan/keact",
-    "version": "1.0.3",
+    "version": "1.0.5",
+    "description": "Keact is a minimal, key-based global state manager for React. No providers, no boilerplate — just a single hook to share state across your app.",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "scripts": {
-      "build": "tsc"
+      "build": "tsup",
+      "dev": "tsup --watch"
     },
     "author": "İnanç Akduvan",
     "license": "MIT",
-    "keywords": ["react", "state", "state management", "global", "store", "keact"],
+    "keywords": ["react", "state", "state management", "context", "useState", "global", "store", "keact"],
     "repository": {
       "type": "git",
       "url": "https://github.com/inancakduvan/keact"
+    },
+    "devDependencies": {
+      "tsup": "^7.2.0",
+      "typescript": "^5.0.0"
+    },
+    "peerDependencies": {
+      "react": ">=18.0.0"
     }
   }
-  

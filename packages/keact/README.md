@@ -2,7 +2,7 @@
 
 ![App Logo](https://res.cloudinary.com/dnjvyciqt/image/upload/v1746881501/yzztqgtdqknfj9vzihou.png)
 
-# 🔑 Keact
+# <img src="https://res.cloudinary.com/dnjvyciqt/image/upload/v1746882540/taelwwhffuou9qlblvy1.png" alt="Preview" style="width: 20px; transform: translateY(6px); margin-right: 8px;" /> Keact
 
 **Keact** is a minimal, key-based global state manager for React. No providers, no boilerplate — just a single hook to share state across your app.
 
@@ -38,7 +38,9 @@ npm i @inancakduvan/keact
 import { useKeact } from '@inancakduvan/keact';
 
 // Initialize once
-const [username, setUsername] = useKeact('username', () => 'John Doe');
+const [username, setUsername] = useKeact('username', {
+  initialValue: 'John Doe'
+});
 
 // Read elsewhere globally by key
 const [username] = useKeact('username');
@@ -47,6 +49,9 @@ const [username] = useKeact('username');
 const [username, setUsername] = useKeact('username');
 setUsername('George Brown');
 ```
+
+📌 That's it — no providers, no boilerplate.
+
 
 ### 2. If you need type-safety
 
