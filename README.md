@@ -38,7 +38,9 @@ npm i @inancakduvan/keact
 import { useKeact } from '@inancakduvan/keact';
 
 // Initialize once
-const [username, setUsername] = useKeact('username', () => 'John Doe');
+const [username, setUsername] = useKeact('username', {
+  initialValue: 'John Doe'
+});
 
 // Read elsewhere globally by key
 const [username] = useKeact('username');
@@ -47,6 +49,9 @@ const [username] = useKeact('username');
 const [username, setUsername] = useKeact('username');
 setUsername('George Brown');
 ```
+
+📌 That's it — no providers, no boilerplate.
+
 
 ### 2. If you need type-safety
 
