@@ -2,7 +2,7 @@
 
 import { useKeact } from "@inancakduvan/keact";
 import { ShoppingBasketIcon } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
 export default function BasketButton() {
     const [basket] = useKeact('basket', {
