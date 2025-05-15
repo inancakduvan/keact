@@ -1,9 +1,5 @@
-import Login from "@/components/login";
+import Products from "@/components/products";
 
 export default function Home() {
-  return (
-    <div className="flex item-center justify-center">
-      <Login />
-    </div>
-  );
+  return <Products />;
 }

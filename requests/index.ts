@@ -1,8 +1,8 @@
-import { CategoriesResponse, ProductDetailResponse, ProductsResponse } from "../types";
+import { CategoriesResponse, ProductDetailResponse, ProductsResponse } from "../types/types";
 
 export const endpoints = {
   allCategories: "products/categories",
-  category: "products/category/${name}",
+  category: (name: string) => `products/category/${name}`,
   products: "products",
   product: (id: string) => `products/${id}`,
 };
@@ -14,8 +14,8 @@ export const fetchCategories = async (): Promise<CategoriesResponse> => {
   return data;
 };
 
-export const fetchCategory = async (id: string) => {
-  const data = await fetch(`https://fakestoreapi.com/${endpoints.category}`);
+export const fetchCategory = async (name: string) => {
+  const data = await fetch(`https://fakestoreapi.com/${endpoints.category(name)}`);
   return data;
 };
 

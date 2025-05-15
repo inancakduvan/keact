@@ -1,17 +1,8 @@
-import '@/packages/keact/src';
+import '@inancakduvan/keact';
+import { BasketProduct } from './types';
 
-declare module '@/packages/keact/src' {
+declare module '@inancakduvan/keact' {
   interface KeactTypeRegistry {
-    first_name: string;
-    is_user_logged_in: boolean;
-  }
-
-  interface KeactContextTypeRegistry {
-    profile: {
-      profile_theme_color: string;
-    };
-    about: {
-      profile_description: string;
-    };
+    basket: Array<BasketProduct>
   }
 }
