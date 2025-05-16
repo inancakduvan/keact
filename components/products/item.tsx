@@ -4,6 +4,7 @@ import { Product } from "@/types/types";
 import { Button } from "../ui/button";
 import { useKeact } from "@inancakduvan/keact";
 import { Minus, Plus } from "lucide-react";
+import Link from "next/link";
 
 export default function ProductItem({ product }: { product: Product }) {
     const [basket, setBasket] = useKeact('basket')
@@ -49,15 +50,17 @@ export default function ProductItem({ product }: { product: Product }) {
     }
 
     return <div className="border-1 rounded-md shadow-xs">
-        <div className="flex items-center justify-center border-b-1 p-4">
-            <img src={product.image} className="max-h-[100px]" />
-        </div>
+        <Link href={`product/${product.id}`}>
+            <div className="flex items-center justify-center border-b-1 p-4">
+                <img src={product.image} className="max-h-[100px]" />
+            </div>
 
-        <div className="p-2">
-            <div className="pr-4 text-xs font-medium text-nowrap overflow-hidden text-ellipsis">{ product.title }</div>
+            <div className="p-2">
+                <div className="pr-4 text-xs font-medium text-nowrap overflow-hidden text-ellipsis">{ product.title }</div>
 
-            <div className="mt-2 text-gray-500 text-xs line-clamp-2 overflow-hidden text-ellipsis">{ product.description }</div>
-        </div>
+                <div className="mt-2 text-gray-500 text-xs line-clamp-2 overflow-hidden text-ellipsis">{ product.description }</div>
+            </div>
+        </Link>
 
         <div className="flex items-center justify-between p-2 mt-2">
             <div className="font-medium text-md">{ product.price } $</div>

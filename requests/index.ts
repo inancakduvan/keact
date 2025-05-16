@@ -15,7 +15,9 @@ export const fetchCategories = async (): Promise<CategoriesResponse> => {
 };
 
 export const fetchCategory = async (name: string) => {
-  const data = await fetch(`https://fakestoreapi.com/${endpoints.category(name)}`);
+  const data = await fetch(`https://fakestoreapi.com/${endpoints.category(name)}`).then((r) =>
+    r.json()
+  );
   return data;
 };
 

@@ -5,8 +5,14 @@ import BasketButton from "./basket-button";
 export default async function Header() {
     const categories = await fetchCategories();
 
-    return <div className="flex items-center justify-between border-b py-4 px-10 shadow-none">
+    return <div className="flex items-center justify-between border-b py-4 px-4 md:px-10 shadow-none">
         <div className="hidden md:flex items-center gap-8 ">
+            <Link href="/">
+                <img src="https://res.cloudinary.com/dnjvyciqt/image/upload/v1746881501/yzztqgtdqknfj9vzihou.png"
+                    className="w-[30px] rounded"
+                />
+            </Link>
+
             {
                 categories.map((category: string) => <Link key={`@category-${category}`} href={`/category/${category}`} 
                     className="text-s font-medium transition duration-300 hover:opacity-50">
