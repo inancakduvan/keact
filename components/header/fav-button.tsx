@@ -3,7 +3,6 @@
 import { useKeact } from "@inancakduvan/keact";
 import { Heart } from "lucide-react";
 import Link from "next/link";
-import { useMemo } from "react";
 
 export default function FavButton() {
     const [favs] = useKeact('favs', {
