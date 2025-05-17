@@ -1,6 +1,6 @@
 
 
-![App Logo](https://res.cloudinary.com/dnjvyciqt/image/upload/v1746881501/yzztqgtdqknfj9vzihou.png)
+![App Logo](https://res.cloudinary.com/dnjvyciqt/image/upload/v1747499928/keact_banner_jsve0i.png)
 
 # <img src="https://res.cloudinary.com/dnjvyciqt/image/upload/v1746882540/taelwwhffuou9qlblvy1.png" alt="Preview" style="width: 20px; transform: translateY(6px); margin-right: 8px;" /> Keact
 
@@ -35,7 +35,7 @@ https://keact.vercel.app
 
 ## 🔧 Usage
 
-### 1. Just define it when/where you need
+### 1. Just define it when/where you need and use it anywhere
 
 ```ts
 // In any component
