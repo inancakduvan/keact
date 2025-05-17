@@ -1,8 +1,9 @@
 import '@inancakduvan/keact';
-import { BasketProduct } from './types';
+import { BasketProduct, ProductsResponse } from './types';
 
 declare module '@inancakduvan/keact' {
   interface KeactTypeRegistry {
-    basket: Array<BasketProduct>
+    basket: Array<BasketProduct>,
+    favs: ProductsResponse
   }
 }

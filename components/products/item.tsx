@@ -3,12 +3,15 @@
 import { Product } from "@/types/types";
 import { Button } from "../ui/button";
 import { useKeact } from "@inancakduvan/keact";
-import { Minus, Plus } from "lucide-react";
+import { Heart, Minus, Plus } from "lucide-react";
 import Link from "next/link";
 
 export default function ProductItem({ product }: { product: Product }) {
-    const [basket, setBasket] = useKeact('basket')
+    const [basket, setBasket] = useKeact('basket');
+    const [favs, setFavs] = useKeact('favs');
+
     const targetProduct = basket.find((item) => item.id === product.id);
+    const productInFavs = favs.find((item) => item.id === product.id);
 
     const addToBasket = () => {
         if (targetProduct) {
@@ -44,12 +47,24 @@ export default function ProductItem({ product }: { product: Product }) {
 
                 setBasket(updatedBasket);
             } else {
-                setBasket([...basket].filter((item) => item.id !== targetProduct.id))
+                setBasket([...basket].filter((item) => item.id !== targetProduct.id));
             }
         }
     }
 
-    return <div className="border-1 rounded-md shadow-xs">
+    const toggleFav = () => {
+        if (productInFavs) {
+            setFavs([...favs].filter((item) => item.id !== productInFavs.id));
+        } else {
+            setFavs([...favs, product])
+        }
+    }
+
+    return <div className="relative border-1 rounded-md shadow-xs">
+        <div className="absolute right-4 top-4 cursor-pointer">
+            <Heart size={20} fill={productInFavs ? "black" : "transparent"} onClick={toggleFav} />
+        </div>
+
         <Link href={`product/${product.id}`}>
             <div className="flex items-center justify-center border-b-1 p-4">
                 <img src={product.image} className="max-h-[100px]" />

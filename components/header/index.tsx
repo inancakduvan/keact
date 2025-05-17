@@ -1,6 +1,7 @@
 import { fetchCategories } from "@/requests"
 import Link from "next/link";
 import BasketButton from "./basket-button";
+import FavButton from "./fav-button";
 
 export default async function Header() {
     const categories = await fetchCategories();
@@ -21,7 +22,8 @@ export default async function Header() {
             }
         </div>
         
-        <div className="flex">
+        <div className="flex gap-4">
+            <FavButton />
             <BasketButton />
         </div>
     </div>
