@@ -1,6 +1,6 @@
 {
     "name": "@inancakduvan/keact",
-    "version": "1.1.5",
+    "version": "1.1.7",
     "description": "Keact is a minimal, key-based global state manager for React. No providers, no boilerplate — just a single hook to share state across your app.",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
