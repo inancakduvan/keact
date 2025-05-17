@@ -126,15 +126,13 @@ export function useKeact<
   const getServerSnapshot = () => {
     if (isContext) {
       contextStores[context] ||= {};
-      if (!(key in contextStores[context]) && options?.initialValue !== undefined) {
+      if (!(key in contextStores[context])) {
         contextStores[context][key] = getDefaultFallback(contextStores[context][key] || options?.initialValue);
       }
       return contextStores[context][key];
     } else {
-      if (!(key in globalStore) && options?.initialValue !== undefined) {
+      if (!(key in globalStore)) {
         globalStore[key] = getDefaultFallback(globalStore[key] || options?.initialValue);
-
-        globalStore[key] = options.initialValue;
       }
       return globalStore[key];
     }
