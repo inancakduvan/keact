@@ -7,8 +7,8 @@ import React, {
 } from "react";
 
 // ========== TYPE DEFINITIONS ==========
-export interface KeactTypeRegistry {}
-export interface KeactContextTypeRegistry {}
+export interface KeactTypeRegistry { }
+export interface KeactContextTypeRegistry { }
 
 // ========== INTERNAL STATE ==========
 const globalStore: Record<string, any> = {};
@@ -45,37 +45,37 @@ export function useKeact<
 >(
   key: C extends keyof KeactContextTypeRegistry
     ? K extends keyof KeactContextTypeRegistry[C]
-      ? K
-      : never
+    ? K
+    : never
     : K,
   options?: {
     initialValue?: C extends keyof KeactContextTypeRegistry
-      ? K extends keyof KeactContextTypeRegistry[C]
-        ? KeactContextTypeRegistry[C][K]
-        : any
-      : K extends keyof KeactTypeRegistry
-        ? KeactTypeRegistry[K]
-        : any;
+    ? K extends keyof KeactContextTypeRegistry[C]
+    ? KeactContextTypeRegistry[C][K]
+    : any
+    : K extends keyof KeactTypeRegistry
+    ? KeactTypeRegistry[K]
+    : any;
     context?: C;
   }
 ): [
-  C extends keyof KeactContextTypeRegistry
+    C extends keyof KeactContextTypeRegistry
     ? K extends keyof KeactContextTypeRegistry[C]
-      ? KeactContextTypeRegistry[C][K]
-      : any
+    ? KeactContextTypeRegistry[C][K]
+    : any
     : K extends keyof KeactTypeRegistry
-      ? KeactTypeRegistry[K]
-      : any,
-  (
-    value: C extends keyof KeactContextTypeRegistry
-      ? K extends keyof KeactContextTypeRegistry[C]
+    ? KeactTypeRegistry[K]
+    : any,
+    (
+      value: C extends keyof KeactContextTypeRegistry
+        ? K extends keyof KeactContextTypeRegistry[C]
         ? KeactContextTypeRegistry[C][K]
         : any
-      : K extends keyof KeactTypeRegistry
+        : K extends keyof KeactTypeRegistry
         ? KeactTypeRegistry[K]
         : any
-  ) => void
-] {
+    ) => void
+  ] {
   const contextFromTree = useContext(KeactCurrentContext);
   const context = options?.context ?? null;
   const isContext = context !== null;
@@ -83,6 +83,17 @@ export function useKeact<
   if (isContext && contextFromTree !== context) {
     throw new Error(`Cannot access Keact context "${context}" outside of its provider.`);
   }
+
+  const getDefaultFallback = (val: any) => {
+    if (Array.isArray(val)) return [];
+    if (val instanceof Set) return new Set();
+    if (val instanceof Map) return new Map();
+    if (typeof val === "object" && val !== null) return {};
+    if (typeof val === "number") return 0;
+    if (typeof val === "string") return "";
+    if (typeof val === "boolean") return false;
+    return undefined;
+  };
 
   const subscribe = (callback: () => void) => {
     if (isContext) {
@@ -112,7 +123,24 @@ export function useKeact<
     }
   };
 
-  const value = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+  const getServerSnapshot = () => {
+    if (isContext) {
+      contextStores[context] ||= {};
+      if (!(key in contextStores[context]) && options?.initialValue !== undefined) {
+        contextStores[context][key] = getDefaultFallback(contextStores[context][key] || options?.initialValue);
+      }
+      return contextStores[context][key];
+    } else {
+      if (!(key in globalStore) && options?.initialValue !== undefined) {
+        globalStore[key] = getDefaultFallback(globalStore[key] || options?.initialValue);
+
+        globalStore[key] = options.initialValue;
+      }
+      return globalStore[key];
+    }
+  };
+
+  const value = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   const setValue = (val: any) => {
     const next = typeof val === "function" ? val(value) : val;

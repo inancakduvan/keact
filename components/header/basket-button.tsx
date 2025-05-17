@@ -1,6 +1,6 @@
 "use client";
 
-import { useKeact } from "@inancakduvan/keact";
+import { useKeact } from "@/packages/keact/src";
 import { ShoppingBasketIcon } from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";
