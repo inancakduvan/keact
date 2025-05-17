@@ -148,8 +148,7 @@ export default function Home() {
         <Copy size={14} className='absolute right-2 top-1.5 text-gray-100 cursor-pointer' onClick={() => copyToClipboard(basicUsageCode)} />
       </div>
 
-      {/* eslint-disable-next-line react/no-unescaped-entities */}
-      <div className='mt-2'>📌 That's it — no providers, no boilerplate.</div>
+      <div className='mt-2'>📌 That is it — no providers, no boilerplate.</div>
 
       <div className='text-lg font-bold text-gray-500 mt-8 mb-2'>2. If you need type-safety</div>
       
@@ -177,8 +176,7 @@ export default function Home() {
         <Copy size={14} className='absolute right-2 top-1.5 text-gray-100 cursor-pointer' onClick={() => copyToClipboard(contextUsageCode)} />
       </div>
       
-      {/* eslint-disable-next-line react/no-unescaped-entities */}
-      <div className='mt-2'>➡️ Now <strong>username</strong> is isolated to only the <strong>"profile"</strong> scope.</div>
+      <div className='mt-2'>➡️ Now <strong>username</strong> is isolated to only the <strong>profile</strong> scope.</div>
       
       <div className='seperator'></div>
 
