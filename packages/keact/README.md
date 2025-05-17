@@ -19,7 +19,7 @@ npm i @inancakduvan/keact
 ---
 
 ## 📝 Official Documentation:
-https://keact.vercel.app
+https://keact.vercel.app/documentation
 
 ---
 
@@ -137,7 +137,7 @@ Keact adds the state into store only when it is needed. It will not consume memo
 ---
 
 ## 📺 A demo page:
-https://keact.vercel.app/demo
+https://keact.vercel.app
 
 ---
 

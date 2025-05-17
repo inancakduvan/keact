@@ -10,7 +10,7 @@
     "keact": "node packages/keact-cli/dist/index.js"
   },
   "dependencies": {
-    "@inancakduvan/keact": "^1.1.4",
+    "@inancakduvan/keact": "^1.1.5",
     "@radix-ui/react-dialog": "^1.1.13",
     "@radix-ui/react-slot": "^1.2.2",
     "@uiw/react-code-preview": "^5.2.2",

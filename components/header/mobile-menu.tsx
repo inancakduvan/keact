@@ -20,12 +20,12 @@ export default function MobileMenu({ categories }: { categories: CategoriesRespo
             </div>
 
             <div>
-                <Link href="/demo" className="block mb-6 mt-10 text-gray-600" onClick={() => setIsMenuOpen(false)}>Homepage</Link>
+                <Link href="/" className="block mb-6 mt-10 text-gray-600" onClick={() => setIsMenuOpen(false)}>Homepage</Link>
 
                 <div className="font-medium">CATEGORIES</div>
                 <div className="flex flex-col gap-2 mt-3">
                     {
-                        categories.map((category: string) => <Link key={`@category-${category}`} href={`/demo/category/${category}`} 
+                        categories.map((category: string) => <Link key={`@category-${category}`} href={`/category/${category}`} 
                             onClick={() => setIsMenuOpen(false)}
                             className="text-s transition duration-300 hover:opacity-50 text-gray-600">
                             { category }
