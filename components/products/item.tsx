@@ -2,7 +2,7 @@
 
 import { BasketProduct, Product } from "@/types/types";
 import { Button } from "../ui/button";
-import { useKeact } from "@/packages/keact/src";
+import { useKeact } from "@inancakduvan/keact";
 import { Heart, Minus, Plus } from "lucide-react";
 import Link from "next/link";
 
