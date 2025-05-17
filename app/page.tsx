@@ -34,7 +34,7 @@ declare module '@inancakduvan/keact' {
 }
 // End`
 
-const contextUsageCode = `import { KeactContext, useKeact } from "@/packages/keact/src";
+const contextUsageCode = `import { KeactContext, useKeact } from "@inancakduvan/keact";
 
 function ProfilePage() {
   return (
@@ -57,7 +57,7 @@ function Profile() {
 // End`
 
 const contextTypeSafetyCode = `// types/keact.d.ts
-import "@/packages/keact/src";
+import "@inancakduvan/keact";
 
 declare module "@inancakduvan/keact" {
   // global states
