@@ -109,17 +109,21 @@ export function useKeact<
   };
 
   const getSnapshot = () => {
-    if (isContext) {
-      contextStores[context] ||= {};
-      if (!(key in contextStores[context]) && options?.initialValue !== undefined) {
-        contextStores[context][key] = options.initialValue;
+    if (typeof window !== "undefined") {
+      if (isContext) {
+        contextStores[context] ||= {};
+        if (!(key in contextStores[context]) && options?.initialValue !== undefined) {
+          contextStores[context][key] = options.initialValue;
+        }
+        return contextStores[context][key];
+      } else {
+        if (!(key in globalStore) && options?.initialValue !== undefined) {
+          globalStore[key] = options.initialValue;
+        }
+        return globalStore[key];
       }
-      return contextStores[context][key];
     } else {
-      if (!(key in globalStore) && options?.initialValue !== undefined) {
-        globalStore[key] = options.initialValue;
-      }
-      return globalStore[key];
+      getServerSnapshot();
     }
   };
 

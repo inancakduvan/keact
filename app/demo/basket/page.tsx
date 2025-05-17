@@ -2,7 +2,7 @@
 
 import Products from "@/components/products";
 import { Button } from "@/components/ui/button";
-import { useKeact } from "@inancakduvan/keact";
+import { useKeact } from "@/packages/keact/src";
 import Link from "next/link";
 import { useMemo } from "react";
 

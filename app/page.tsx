@@ -5,11 +5,11 @@ import { javascript } from '@codemirror/lang-javascript';
 
 import { Copy, Info } from 'lucide-react';
 
-const npmInstallCode = `npm i @inancakduvan/keact`;
+const npmInstallCode = `npm i @/packages/keact/src`;
 
 const basicUsageCode = `// In any component
 
-import { useKeact } from '@inancakduvan/keact';
+import { useKeact } from '@/packages/keact/src';
 
 // Initialize once
 const [username, setUsername] = useKeact('username', {
@@ -24,9 +24,9 @@ const [username, setUsername] = useKeact('username');
 setUsername('George Brown');
 // End`
 
-const basicTypeSafetyCode = `import '@inancakduvan/keact';
+const basicTypeSafetyCode = `import '@/packages/keact/src';
 
-declare module '@inancakduvan/keact' {
+declare module '@/packages/keact/src' {
   interface KeactTypeRegistry {
     username: string;
     count: number;
@@ -34,7 +34,7 @@ declare module '@inancakduvan/keact' {
 }
 // End`
 
-const contextUsageCode = `import { KeactContext, useKeact } from "@inancakduvan/keact";
+const contextUsageCode = `import { KeactContext, useKeact } from "@/packages/keact/src";
 
 function ProfilePage() {
   return (
@@ -57,9 +57,9 @@ function Profile() {
 // End`
 
 const contextTypeSafetyCode = `// types/keact.d.ts
-import "@inancakduvan/keact";
+import "@/packages/keact/src";
 
-declare module "@inancakduvan/keact" {
+declare module "@/packages/keact/src" {
   // global states
   interface KeactTypeRegistry {
     appVersion: string;

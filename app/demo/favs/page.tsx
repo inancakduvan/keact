@@ -1,7 +1,7 @@
 "use client";
 
 import Products from "@/components/products";
-import { useKeact } from "@inancakduvan/keact";
+import { useKeact } from "@/packages/keact/src";
 import Link from "next/link";
 
 export default function Favs() {
