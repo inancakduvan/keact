@@ -4,9 +4,9 @@ import { fetchCategory } from "@/requests"
 export default async function CategoryPage({
   params,
 }: {
-  params: { category: string };
+  params: Promise<{ category: string}>;
 }) {
-    const category = await fetchCategory(params.category);
+    const category = await fetchCategory((await params).category);
 
     return <Products products={category} />
 }

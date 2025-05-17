@@ -9,7 +9,7 @@ export default function FavButton() {
         initialValue: []
     })
 
-    return<Link href="favs"
+    return<Link href="/favs"
         className="relative flex items-center justify-center rounded w-[30px] h-[30px] bg-gray-100"
     >
         <Heart fill="black" size={20} />
