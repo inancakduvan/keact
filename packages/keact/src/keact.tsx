@@ -23,7 +23,11 @@ const exposeStoreToWindow = () => {
     (window as any).__KEACT_CONTEXT_STORES__ = contextStores;
   }
 };
-exposeStoreToWindow();
+
+// Only expose when in browser environment
+if (typeof window !== 'undefined') {
+  exposeStoreToWindow();
+}
 
 // ========== CONTEXT HANDLING ==========
 const KeactCurrentContext = createContext<string | null>(null);
@@ -37,6 +41,19 @@ export function KeactContext({ name, children }: { name: string; children: React
   }
   return <KeactCurrentContext.Provider value={name}>{children}</KeactCurrentContext.Provider>;
 }
+
+// Helper to get default value based on initialValue type
+const getDefaultFallback = (val: any) => {
+  if (val === undefined) return undefined;
+  if (Array.isArray(val)) return [];
+  if (val instanceof Set) return new Set();
+  if (val instanceof Map) return new Map();
+  if (typeof val === "object" && val !== null) return {};
+  if (typeof val === "number") return 0;
+  if (typeof val === "string") return "";
+  if (typeof val === "boolean") return false;
+  return undefined;
+};
 
 // ========== useKeact HOOK ==========
 export function useKeact<
@@ -84,65 +101,78 @@ export function useKeact<
     throw new Error(`Cannot access Keact context "${context}" outside of its provider.`);
   }
 
-  const getDefaultFallback = (val: any) => {
-    if (Array.isArray(val)) return [];
-    if (val instanceof Set) return new Set();
-    if (val instanceof Map) return new Map();
-    if (typeof val === "object" && val !== null) return {};
-    if (typeof val === "number") return 0;
-    if (typeof val === "string") return "";
-    if (typeof val === "boolean") return false;
-    return undefined;
+  // Initialize the store with the default value
+  const initializeStore = () => {
+    const initialValue = options?.initialValue;
+    
+    if (isContext) {
+      contextStores[context] ||= {};
+      if (!(key in contextStores[context]) && initialValue !== undefined) {
+        contextStores[context][key] = initialValue;
+      }
+    } else {
+      if (!(key in globalStore) && initialValue !== undefined) {
+        globalStore[key] = initialValue;
+      }
+    }
   };
+
+  // Initialize on first render
+  useRef(() => {
+    initializeStore();
+  }).current();
 
   const subscribe = (callback: () => void) => {
     if (isContext) {
       contextListeners[context] ||= {};
       contextListeners[context][key] ||= new Set();
       contextListeners[context][key].add(callback);
-      return () => contextListeners[context][key].delete(callback);
+      return () => {
+        contextListeners[context]?.[key]?.delete(callback);
+      };
     } else {
       globalListeners[key] ||= new Set();
       globalListeners[key].add(callback);
-      return () => globalListeners[key].delete(callback);
+      return () => {
+        globalListeners[key]?.delete(callback);
+      };
     }
   };
 
   const getSnapshot = () => {
-    if (typeof window !== "undefined") {
-      if (isContext) {
-        contextStores[context] ||= {};
-        if (!(key in contextStores[context]) && options?.initialValue !== undefined) {
-          contextStores[context][key] = options.initialValue;
-        }
-        return contextStores[context][key];
-      } else {
-        if (!(key in globalStore) && options?.initialValue !== undefined) {
-          globalStore[key] = options.initialValue;
-        }
-        return globalStore[key];
-      }
+    // Make sure store is initialized
+    initializeStore();
+    
+    if (isContext) {
+      return contextStores[context][key];
     } else {
-      getServerSnapshot();
+      return globalStore[key];
     }
   };
 
   const getServerSnapshot = () => {
+    // Initialize with default values for SSR
+    initializeStore();
+    
+    // Ensure we always have a value for server rendering
     if (isContext) {
-      contextStores[context] ||= {};
-      if (!(key in contextStores[context])) {
-        contextStores[context][key] = getDefaultFallback(contextStores[context][key] || options?.initialValue);
+      if (contextStores[context][key] === undefined) {
+        contextStores[context][key] = getDefaultFallback(options?.initialValue);
       }
       return contextStores[context][key];
     } else {
-      if (!(key in globalStore)) {
-        globalStore[key] = getDefaultFallback(globalStore[key] || options?.initialValue);
+      if (globalStore[key] === undefined) {
+        globalStore[key] = getDefaultFallback(options?.initialValue);
       }
       return globalStore[key];
     }
   };
 
-  const value = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const value = useSyncExternalStore(
+    subscribe,
+    getSnapshot,
+    getServerSnapshot
+  );
 
   const setValue = (val: any) => {
     const next = typeof val === "function" ? val(value) : val;
@@ -156,7 +186,9 @@ export function useKeact<
       globalListeners[key]?.forEach((l) => l());
     }
 
-    exposeStoreToWindow();
+    if (typeof window !== 'undefined') {
+      exposeStoreToWindow();
+    }
   };
 
   return [value, setValue];
