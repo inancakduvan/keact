@@ -10,6 +10,10 @@ export default function BasketButton() {
         initialValue: []
     })
 
+    const [prepender] = useKeact('prerender', {
+        initialValue: []
+    })
+
     const basketCount = useMemo(() => {
         return basket.reduce((acc, current) => acc + (current.quantity), 0);
     }, [basket])
@@ -19,6 +23,8 @@ export default function BasketButton() {
         className="relative flex items-center justify-center rounded w-[30px] h-[30px] bg-gray-100"
     >
         <ShoppingBasketIcon size={20} />
+
+        <span className="sr-only">{prepender.length}</span>
 
         <div 
         className="absolute right-[-8px] bottom-[-8px] w-[20px] h-[20px] flex items-center text-xs justify-center rounded-full bg-red-200">
