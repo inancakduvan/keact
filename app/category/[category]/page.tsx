@@ -6,7 +6,7 @@ export default async function CategoryPage({
 }: {
   params: { category: string };
 }) {
-    const category = await fetchCategory((await params).category);
+    const category = await fetchCategory(params.category);
 
     return <Products products={category} />
 }

@@ -6,7 +6,7 @@ import { useKeact } from "@inancakduvan/keact";
 import { Heart, Minus, Plus } from "lucide-react";
 import Link from "next/link";
 
-export default function ProductItem({ product, isBasket }: { product: Product | BasketProduct, isBasket: boolean }) {
+export default function ProductItem({ product, isBasket=false }: { product: Product | BasketProduct, isBasket?: boolean }) {
     const [basket, setBasket] = useKeact('basket');
     const [favs, setFavs] = useKeact('favs');
 
