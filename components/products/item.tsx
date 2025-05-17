@@ -10,8 +10,8 @@ export default function ProductItem({ product, isBasket=false }: { product: Prod
     const [basket, setBasket] = useKeact('basket');
     const [favs, setFavs] = useKeact('favs');
 
-    const targetProduct = basket ? basket.find((item) => item.id === product.id) : undefined;
-    const productInFavs = favs ? favs.find((item) => item.id === product.id) : undefined;
+    const targetProduct = basket.find((item) => item.id === product.id);
+    const productInFavs = favs.find((item) => item.id === product.id);
 
     const addToBasket = () => {
         if (targetProduct) {
