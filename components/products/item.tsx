@@ -1,12 +1,12 @@
 "use client";
 
-import { Product } from "@/types/types";
+import { BasketProduct, Product } from "@/types/types";
 import { Button } from "../ui/button";
 import { useKeact } from "@inancakduvan/keact";
 import { Heart, Minus, Plus } from "lucide-react";
 import Link from "next/link";
 
-export default function ProductItem({ product }: { product: Product }) {
+export default function ProductItem({ product, isBasket }: { product: Product | BasketProduct, isBasket: boolean }) {
     const [basket, setBasket] = useKeact('basket');
     const [favs, setFavs] = useKeact('favs');
 
@@ -25,12 +25,7 @@ export default function ProductItem({ product }: { product: Product }) {
 
             setBasket(updatedBasket);
         } else {
-            setBasket([...basket, {
-                id: product.id,
-                title: product.title,
-                price: product.price,
-                quantity: 1
-            }])
+            setBasket([...basket, { ...product, quantity: 1}])
         }
     }
     
@@ -78,7 +73,10 @@ export default function ProductItem({ product }: { product: Product }) {
         </Link>
 
         <div className="flex items-center justify-between p-2 mt-2">
-            <div className="font-medium text-md">{ product.price } $</div>
+            <div className="font-medium text-md">{ isBasket ?  <>
+                <span className="text-xs text-gray-400 font-regular">Total price:</span><br />
+                {(product.price * product.quantity).toFixed(2)}
+            </> : product.price } $</div>
 
             {
                 targetProduct ?

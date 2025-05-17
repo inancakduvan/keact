@@ -6,14 +6,15 @@ export type ProductsResponse = Product[];
 
 export type Category = string;
 
-export interface BasketProduct {
+export interface BasketProduct extends Product {
+  quantity: number;
+}
+
+export interface Product {
   id: number;
   title: string;
   price: number;
   quantity: number;
-}
-
-export interface Product extends Omit<BasketProduct, "quantity"> {
   description: string;
   category: Category;
   image: string;
