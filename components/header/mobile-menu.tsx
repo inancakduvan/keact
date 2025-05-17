@@ -20,7 +20,7 @@ export default function MobileMenu({ categories }: { categories: CategoriesRespo
             </div>
 
             <div>
-                <Link href="/" className="block mb-6 mt-10 text-gray-600" onClick={() => setIsMenuOpen(false)}>Homepage</Link>
+                <Link href="/demo" className="block mb-6 mt-10 text-gray-600" onClick={() => setIsMenuOpen(false)}>Homepage</Link>
 
                 <div className="font-medium">CATEGORIES</div>
                 <div className="flex flex-col gap-2 mt-3">

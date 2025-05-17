@@ -17,7 +17,7 @@ export default function Payment() {
 
         <div className="mt-10 text-lg font-medium text-center">
             Your payment is successful!
-            <Link href="/" className="block mt-4 text-indigo-600 underline">Go back to home</Link>
+            <Link href="/demo" className="block mt-4 text-indigo-600 underline">Go back to home</Link>
         </div>
     </div>
 }
