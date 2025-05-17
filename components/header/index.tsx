@@ -1,11 +1,25 @@
+"use client";
+
 import { fetchCategories } from "@/requests"
 import Link from "next/link";
 import BasketButton from "./basket-button";
 import FavButton from "./fav-button";
 import MobileMenu from "./mobile-menu";
+import { useEffect, useState } from "react";
+import { CategoriesResponse } from "@/types/types";
 
-export default async function Header() {
-    const categories = await fetchCategories();
+export default function Header() {
+    const [categories, setCategories] = useState<CategoriesResponse>([]);
+
+    useEffect(() => {
+        const handleFetchCategories = async () => {
+            const categories = await fetchCategories();
+
+            setCategories(categories);
+        }
+
+        handleFetchCategories();
+    }, [])
 
     return <div className="z-10 sticky left-0 top-0 bg-white flex items-center justify-between border-b py-4 px-4 md:px-10 shadow-none">
         <div className="hidden md:flex items-center gap-8">
