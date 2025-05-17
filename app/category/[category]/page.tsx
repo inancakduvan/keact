@@ -6,7 +6,12 @@ export default async function CategoryPage({
 }: {
   params: Promise<{ category: string}>;
 }) {
-    const category = await fetchCategory((await params).category);
+    const searchParams = await params;
+    const category = await fetchCategory(searchParams.category);
 
-    return <Products products={category} />
+      return <>
+        <div className="font-bold px-4 md:px-10 mt-4 md:mt-10">{searchParams.category.toUpperCase()}</div>
+
+        <Products products={category} />
+      </>
 }

@@ -5,6 +5,8 @@ export default async function ProductPage({ params }: { params: Promise<{id: str
     const product = await fetchProduct((await params).id);
 
     return <div className="p-4 md:p-10">
+        <div className="font-bold mb-4 md:mb-10">{product.title.toUpperCase()}</div>
+
         <ProductItem product={product} />
     </div>
 }

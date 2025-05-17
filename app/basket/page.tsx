@@ -12,6 +12,8 @@ export default function Basket() {
     const totalPrice = useMemo(() => basket.reduce((acc, current) => acc + (current.price * current.quantity), 0), [basket]);
 
     return <>
+        <div className="font-bold px-4 md:px-10 mt-4 md:mt-10">BASKET</div>
+
         {
             basket && basket.length > 0 ?
             <div className="pb-[72px]">
