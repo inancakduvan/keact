@@ -9,7 +9,7 @@ import { useMemo } from "react";
 export default function Basket() {
     const [basket] = useKeact("basket");
 
-    const totalPrice = useMemo(() => basket.reduce((acc, current) => acc + (current.price * current.quantity), 0), [basket]);
+    const totalPrice = useMemo(() => basket ? basket.reduce((acc, current) => acc + (current.price * current.quantity), 0) : 0, [basket]);
 
     return <>
         <div className="font-bold px-4 md:px-10 mt-4 md:mt-10">BASKET</div>
