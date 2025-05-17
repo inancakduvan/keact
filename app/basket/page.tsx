@@ -25,13 +25,13 @@ export default function Basket() {
                         <span>{ totalPrice.toFixed(2) } $</span>
                     </div>
 
-                    <Link href="/payment">
+                    <Link href="/demo/payment">
                         <Button>Complete Payment</Button>
                     </Link>
                 </div>
             </div>
             :
-            <div className="p-4 md:p-10">You dont have any item on your basket yet! <br /> <Link href="/" className="text-indigo-600 underline">Go back to home</Link></div>
+            <div className="p-4 md:p-10">You dont have any item on your basket yet! <br /> <Link href="/demo" className="text-indigo-600 underline">Go back to home</Link></div>
         }
     </>
 }

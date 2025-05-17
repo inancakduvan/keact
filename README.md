@@ -18,6 +18,11 @@ npm i @inancakduvan/keact
 
 ---
 
+## 📝 Official Documentation:
+https://keact.vercel.app
+
+---
+
 ## ✨ Features
 
 - ✅ Zero configuration
@@ -30,7 +35,7 @@ npm i @inancakduvan/keact
 
 ## 🔧 Usage
 
-### 1. Initialize and Use State
+### 1. Just define it when/where you need
 
 ```ts
 // In any component
@@ -132,7 +137,7 @@ Keact adds the state into store only when it is needed. It will not consume memo
 ---
 
 ## 📺 A demo page:
-https://keact.vercel.app/
+https://keact.vercel.app/demo
 
 ---
 

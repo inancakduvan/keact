@@ -15,7 +15,7 @@ export default function BasketButton() {
     }, [basket])
 
     return<Link 
-        href="/basket"
+        href="/demo/basket"
         className="relative flex items-center justify-center rounded w-[30px] h-[30px] bg-gray-100"
     >
         <ShoppingBasketIcon size={20} />

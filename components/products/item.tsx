@@ -60,7 +60,7 @@ export default function ProductItem({ product, isBasket=false }: { product: Prod
             <Heart size={20} fill={productInFavs ? "black" : "transparent"} onClick={toggleFav} />
         </div>
 
-        <Link href={`/product/${product.id}`}>
+        <Link href={`/demo/product/${product.id}`}>
             <div className="flex items-center justify-center border-b-1 p-4">
                 <img src={product.image} className="max-h-[100px]" />
             </div>
