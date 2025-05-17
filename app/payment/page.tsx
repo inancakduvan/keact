@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useEffect } from "react";
 
 export default function PaymentPage() {
-    const [_, setBasket] = useKeact('basket');
+    const [, setBasket] = useKeact('basket');
 
     useEffect(() => {
         setBasket([]);
