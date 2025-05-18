@@ -38,44 +38,41 @@ export function KeactContext({ name, children }: { name: string; children: React
   return <KeactCurrentContext.Provider value={name}>{children}</KeactCurrentContext.Provider>;
 }
 
-// ========== useKeact HOOK ==========
+// ========== useKeact HOOK with overloads ==========
+
+// Global state version
+export function useKeact<K extends keyof KeactTypeRegistry>(
+  key: K,
+  options?: { initialValue?: KeactTypeRegistry[K] }
+): [KeactTypeRegistry[K], (value: KeactTypeRegistry[K]) => void];
+
+export function useKeact(
+  key: string,
+  options?: { initialValue?: any }
+): [any, (value: any) => void];
+
 export function useKeact<
-  K extends string,
-  C extends string | undefined = undefined
+  C extends keyof KeactContextTypeRegistry,
+  K extends keyof KeactContextTypeRegistry[C]
 >(
-  key: C extends keyof KeactContextTypeRegistry
-    ? K extends keyof KeactContextTypeRegistry[C]
-      ? K
-      : never
-    : K,
+  key: K,
+  options: { context: C; initialValue?: KeactContextTypeRegistry[C][K] }
+): [KeactContextTypeRegistry[C][K], (value: KeactContextTypeRegistry[C][K]) => void];
+
+export function useKeact(
+  key: string,
+  options: { context: string; initialValue?: any }
+): [any, (value: any) => void];
+
+
+// Unified implementation
+export function useKeact(
+  key: string,
   options?: {
-    initialValue?: C extends keyof KeactContextTypeRegistry
-      ? K extends keyof KeactContextTypeRegistry[C]
-        ? KeactContextTypeRegistry[C][K]
-        : any
-      : K extends keyof KeactTypeRegistry
-        ? KeactTypeRegistry[K]
-        : any;
-    context?: C;
+    initialValue?: any;
+    context?: string;
   }
-): [
-  C extends keyof KeactContextTypeRegistry
-    ? K extends keyof KeactContextTypeRegistry[C]
-      ? KeactContextTypeRegistry[C][K]
-      : any
-    : K extends keyof KeactTypeRegistry
-      ? KeactTypeRegistry[K]
-      : any,
-  (
-    value: C extends keyof KeactContextTypeRegistry
-      ? K extends keyof KeactContextTypeRegistry[C]
-        ? KeactContextTypeRegistry[C][K]
-        : any
-      : K extends keyof KeactTypeRegistry
-        ? KeactTypeRegistry[K]
-        : any
-  ) => void
-] {
+): [any, (value: any) => void] {
   const contextFromTree = useContext(KeactCurrentContext);
   const context = options?.context ?? null;
   const isContext = context !== null;
