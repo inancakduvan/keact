@@ -46,45 +46,45 @@ setBasket({
 });
 // End`
 
-const contextUsageCode = `import { KeactContext, useKeact } from "@inancakduvan/keact";
+// const contextUsageCode = `import { KeactContext, useKeact } from "@inancakduvan/keact";
 
-function ProfilePage() {
-  return (
-    <KeactContext name="profile">
-      <Profile />
-    </KeactContext>
-  );
-}
+// function ProfilePage() {
+//   return (
+//     <KeactContext name="profile">
+//       <Profile />
+//     </KeactContext>
+//   );
+// }
 
-function Profile() {
-  const [username, setUsername] = useKeact("username", {
-    context: "profile",
-    initialValue: 'John Doe',
-  });
+// function Profile() {
+//   const [username, setUsername] = useKeact("username", {
+//     context: "profile",
+//     initialValue: 'John Doe',
+//   });
 
-  return (
-    <button onClick={() => setUsername('George Brown')}>Username: {username}</button>
-  );
-}
-// End`
+//   return (
+//     <button onClick={() => setUsername('George Brown')}>Username: {username}</button>
+//   );
+// }
+// // End`
 
-const contextTypeSafetyCode = `// types/keact.d.ts
-import "@inancakduvan/keact";
+// const contextTypeSafetyCode = `// types/keact.d.ts
+// import "@inancakduvan/keact";
 
-declare module "@inancakduvan/keact" {
-  // global states
-  interface KeactTypeRegistry {
-    appVersion: string;
-  }
+// declare module "@inancakduvan/keact" {
+//   // global states
+//   interface KeactTypeRegistry {
+//     appVersion: string;
+//   }
 
-  // contextual states
-  interface KeactContextTypeRegistry {
-    profile: {
-      username: string;
-    };
-  }
-}
-// End`
+//   // contextual states
+//   interface KeactContextTypeRegistry {
+//     profile: {
+//       username: string;
+//     };
+//   }
+// }
+// // End`
 
 export default function Home() {
   function copyToClipboard(text: string) {
