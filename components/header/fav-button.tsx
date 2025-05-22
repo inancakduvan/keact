@@ -1,6 +1,6 @@
 "use client";
 
-import { useKeact } from "@inancakduvan/keact";
+import { useKeact } from "@/store";
 import { Heart } from "lucide-react";
 import Link from "next/link";
 

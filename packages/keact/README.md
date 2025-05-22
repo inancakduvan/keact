@@ -35,7 +35,7 @@ https://keact.vercel.app
 
 ## 🔧 Usage
 
-### 1. Just define it when/where you need and use it anywhere
+### 1. The simplest way — define anywhere and use everywhere
 
 ```ts
 // In any component
@@ -60,23 +60,33 @@ setUsername('George Brown');
 
 ### 2. If you need type-safety
 
-Create a `keact.d.ts` file in your source directory (e.g., `types/keact.d.ts`) and declare your keys and their types:
-
 ```ts
-// types/keact.d.ts
-import '@inancakduvan/keact';
+// store.ts
+import { typeSafeKeact } from "@inancakduvan/keact";
 
-declare module '@inancakduvan/keact' {
-  interface KeactTypeRegistry {
-    username: string;
+interface KeactStore {
+  basket: {
+    id: string;
     count: number;
   }
 }
+
+export const useKeact = typeSafeKeact<KeactStore>();
+
+// your-component.ts
+import { useKeact } from "@/store.ts";
+
+const [basket, setBasket] = useKeact('basket');
+
+setBasket({
+  id: "12345",
+  count: 3
+});
 ```
 
----
+<!-- --- -->
 
-## 🧩 Contextual State (Scoped to a Provider)
+<!-- ## 🧩 Contextual State (Scoped to a Provider)
 
 Use `KeactContext` to isolate state between parts of your app:
 
@@ -103,9 +113,9 @@ function Profile() {
 }
 ```
 
-➡️ Now `username` is isolated to only the `"profile"` scope.
+➡️ Now `username` is isolated to only the `"profile"` scope. -->
 
----
+<!-- ---
 
 ## Type-safety for contextual states
 
@@ -126,9 +136,9 @@ declare module "@inancakduvan/keact" {
     };
   }
 }
-```
+``` -->
 
----
+<!-- --- -->
 
 ## 🧼 Memory efficiency
 

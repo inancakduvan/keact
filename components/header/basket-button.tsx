@@ -1,12 +1,12 @@
 "use client";
 
-import { useKeact } from "@inancakduvan/keact";
+import { useKeact } from "@/store";
 import { ShoppingBasketIcon } from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";
 
 export default function BasketButton() {
-    const [basket] = useKeact('basket', {
+    const [basket] = useKeact("basket", {
         initialValue: []
     })
 

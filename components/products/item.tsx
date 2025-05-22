@@ -2,9 +2,9 @@
 
 import { BasketProduct, Product } from "@/types/types";
 import { Button } from "../ui/button";
-import { useKeact } from "@inancakduvan/keact";
 import { Heart, Minus, Plus } from "lucide-react";
 import Link from "next/link";
+import { useKeact } from "@/store";
 
 export default function ProductItem({ product, isBasket=false }: { product: Product | BasketProduct, isBasket?: boolean }) {
     const [basket, setBasket] = useKeact('basket');

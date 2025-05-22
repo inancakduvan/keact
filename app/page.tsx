@@ -24,14 +24,26 @@ const [username, setUsername] = useKeact('username');
 setUsername('George Brown');
 // End`
 
-const basicTypeSafetyCode = `import '@inancakduvan/keact';
+const basicTypeSafetyCode = `import { typeSafeKeact } from "@inancakduvan/keact";
 
-declare module '@inancakduvan/keact' {
-  interface KeactTypeRegistry {
-    username: string;
+interface KeactStore {
+  basket: {
+    id: string;
     count: number;
   }
 }
+
+export const useKeact = typeSafeKeact<KeactStore>();
+
+// your-component.ts
+import { useKeact } from "@/store.ts";
+
+const [basket, setBasket] = useKeact('basket');
+
+setBasket({
+  id: "12345",
+  count: 3
+});
 // End`
 
 const contextUsageCode = `import { KeactContext, useKeact } from "@inancakduvan/keact";
@@ -140,7 +152,7 @@ export default function Home() {
 
       <div className="text-2xl font-bold mt-4 mb-2">Usage</div>
 
-      <div className='text-lg font-bold text-gray-500 mt-1 mb-4'>1. Just define it when/where you need</div>
+      <div className='text-lg font-bold text-gray-500 mt-1 mb-4'>1. The simplest way — define anywhere and use everywhere</div>
 
       <div className='relative'>
         <CodeMirror className='rounded' value={basicUsageCode} theme="dark" extensions={[javascript({ jsx: true })]} readOnly />
@@ -151,10 +163,6 @@ export default function Home() {
       <div className='mt-2'>📌 That is it — no providers, no boilerplate.</div>
 
       <div className='text-lg font-bold text-gray-500 mt-8 mb-2'>2. If you need type-safety</div>
-      
-      <div className='mt-2 mb-4'>
-        Create a <strong>keact.d.ts</strong> file in your source directory (e.g., <strong>types/keact.d.ts</strong>) and declare your keys and their types:
-      </div>
 
       <div className='relative'>
         <CodeMirror className='rounded' value={basicTypeSafetyCode} theme="dark" extensions={[javascript({ jsx: true })]} readOnly />
@@ -162,7 +170,7 @@ export default function Home() {
         <Copy size={14} className='absolute right-2 top-1.5 text-gray-100 cursor-pointer' onClick={() => copyToClipboard(basicTypeSafetyCode)} />
       </div>
       
-      <div className='seperator'></div>
+      {/* <div className='seperator'></div>
 
       <div className="text-2xl font-bold mt-4 mb-2">Contextual State (Scoped to a Provider)</div>
       
@@ -188,9 +196,11 @@ export default function Home() {
         <Copy size={14} className='absolute right-2 top-1.5 text-gray-100 cursor-pointer' onClick={() => copyToClipboard(contextTypeSafetyCode)} />
       </div>
 
+      <div className='seperator'></div> */}
+
       <div className='seperator'></div>
 
-      <div className="text-2xl font-bold mt-4 mb-2">🧼 Memory efficiency</div>
+      <div className="text-2xl font-bold mt-8 mb-2">🧼 Memory efficiency</div>
 
       <div>
         Keact adds the state into store only when it is needed. It will not consume memory until it is needed to use.
