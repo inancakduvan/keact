@@ -144,7 +144,6 @@ export default function Home() {
         <div>✅ Zero configuration</div>
         <div>🔑 Key-Based Global State Access</div>
         <div>⚡ Fast and memory-efficient</div>
-        <div>🧩 Support for context-based scoping</div>
         <div>💡 Developer-friendly API</div>
       </div>
       

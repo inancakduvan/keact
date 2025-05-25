@@ -28,7 +28,6 @@ https://keact.vercel.app
 - ✅ Zero configuration
 - 🔑 Key-Based Global State Access
 - ⚡ Fast and memory-efficient
-- 🧩 Support for context-based scoping
 - 💡 Developer-friendly API
 
 ---
