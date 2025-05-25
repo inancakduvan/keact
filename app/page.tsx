@@ -24,7 +24,8 @@ const [username, setUsername] = useKeact('username');
 setUsername('George Brown');
 // End`
 
-const basicTypeSafetyCode = `import { typeSafeKeact } from "@inancakduvan/keact";
+const basicTypeSafetyCode = `// store.ts
+import { typeSafeKeact } from "@inancakduvan/keact";
 
 interface KeactStore {
   basket: {
