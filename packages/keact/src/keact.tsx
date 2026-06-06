@@ -1,4 +1,4 @@
-import React, { useSyncExternalStore, useRef } from "react";
+import React, { useSyncExternalStore, useRef, useCallback } from "react";
 
 // ========== TYPE DEFINITIONS ==========
 export interface KeactTypeRegistry {}
@@ -89,7 +89,9 @@ export function useKeact(
     hasValue: false,
   });
 
-  const subscribe = (callback: () => void) => {
+  // Stable subscribe identity so useSyncExternalStore doesn't unsubscribe +
+  // resubscribe on every render.
+  const subscribe = useCallback((callback: () => void) => {
     if (isSelector) {
       // Subscribe to every write (including future keys), not just keys that
       // happen to exist at subscribe time.
@@ -101,10 +103,14 @@ export function useKeact(
       globalListeners[key] ||= new Set();
       globalListeners[key].add(callback);
       return () => {
-        globalListeners[key]?.delete(callback);
+        const set = globalListeners[key];
+        if (!set) return;
+        set.delete(callback);
+        // Drop empty listener sets so they don't accumulate over the app's life.
+        if (set.size === 0) delete globalListeners[key];
       };
     }
-  };
+  }, [key, isSelector]);
 
   const getSnapshot = () => {
     if (isSelector) {
@@ -125,16 +131,22 @@ export function useKeact(
 
   const value = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 
-  const setValue = (val: any) => {
+  // Stable setValue identity; reads the current value from the store rather
+  // than closing over `value`, so it never goes stale and never re-creates.
+  const setValue = useCallback((val: any) => {
     if (isSelector) {
       throw new Error('Cannot set value when using selector. Use direct key access instead.');
     }
 
-    const next = typeof val === "function" ? val(value) : val;
+    const prev = globalStore[key];
+    const next = typeof val === "function" ? val(prev) : val;
+    // Skip work and re-renders when the value is unchanged.
+    if (Object.is(prev, next)) return;
+
     globalStore[key] = next;
     notify(key);
     exposeStoreToWindow();
-  };
+  }, [key, isSelector]);
 
   return [value, setValue];
 }
