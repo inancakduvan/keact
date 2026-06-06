@@ -44,15 +44,16 @@ export function typeSafeKeact<T extends Record<string, any>>() {
     options?: { initialValue?: T[K] }
   ): [T[K], (value: T[K] | ((prev: T[K]) => T[K])) => void];
   
+  // Selectors are read-only: they derive a value and cannot set it, so the
+  // tuple intentionally has no setter (calling one would throw at runtime).
   function useTypedKeact<R>(
-    selector: (state: T) => R,
-    options?: { initialValue?: any }
-  ): [R, (value: R | ((prev: R) => R)) => void];
-  
+    selector: (state: T) => R
+  ): [R];
+
   function useTypedKeact<K extends keyof T, R>(
     keyOrSelector: K | ((state: T) => R),
     options?: { initialValue?: any }
-  ): [any, (value: any) => void] {
+  ): any {
     return useKeact(keyOrSelector as any, options);
   }
   
@@ -70,15 +71,15 @@ export function useKeact(
   options?: { initialValue?: any }
 ): [any, (value: any) => void];
 
+// Selectors are read-only: the tuple has no setter on purpose.
 export function useKeact<T>(
-  selector: (state: Record<string, any>) => T,
-  options?: { initialValue?: any }
-): [T, (value: T | ((prev: T) => T)) => void];
+  selector: (state: Record<string, any>) => T
+): [T];
 
 export function useKeact(
   keyOrSelector: string | ((state: Record<string, any>) => any),
   options?: { initialValue?: any }
-): [any, (value: any) => void] {
+): any {
   const isSelector = typeof keyOrSelector === 'function';
   const key = isSelector ? '__SELECTOR__' : keyOrSelector as string;
 
