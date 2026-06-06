@@ -1,4 +1,4 @@
-import React, { useSyncExternalStore } from "react";
+import React, { useSyncExternalStore, useRef } from "react";
 
 // ========== TYPE DEFINITIONS ==========
 export interface KeactTypeRegistry {}
@@ -6,6 +6,29 @@ export interface KeactTypeRegistry {}
 // ========== INTERNAL STATE ==========
 const globalStore: Record<string, any> = {};
 const globalListeners: Record<string, Set<() => void>> = {};
+// Selectors can read any key, so they subscribe here and are notified on any write.
+const globalSubscribers: Set<() => void> = new Set();
+
+// Notify both the per-key listeners and every selector subscriber.
+const notify = (key: string) => {
+  globalListeners[key]?.forEach((l) => l());
+  globalSubscribers.forEach((l) => l());
+};
+
+// Shallow comparison so selectors returning a fresh object/array each call
+// (e.g. `s => ({ a: s.a })`) don't break useSyncExternalStore's snapshot caching.
+const shallowEqual = (a: any, b: any): boolean => {
+  if (Object.is(a, b)) return true;
+  if (typeof a !== "object" || a === null || typeof b !== "object" || b === null) {
+    return false;
+  }
+  const keysA = Object.keys(a);
+  const keysB = Object.keys(b);
+  if (keysA.length !== keysB.length) return false;
+  return keysA.every(
+    (k) => Object.prototype.hasOwnProperty.call(b, k) && Object.is(a[k], b[k])
+  );
+};
 
 const exposeStoreToWindow = () => {
   if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
@@ -58,30 +81,40 @@ export function useKeact(
 ): [any, (value: any) => void] {
   const isSelector = typeof keyOrSelector === 'function';
   const key = isSelector ? '__SELECTOR__' : keyOrSelector as string;
-  
+
+  // Per-instance cache of the last selector result so we can return a stable
+  // reference while the computed value is unchanged.
+  const cacheRef = useRef<{ value: any; hasValue: boolean }>({
+    value: undefined,
+    hasValue: false,
+  });
+
   const subscribe = (callback: () => void) => {
     if (isSelector) {
-      // For selectors, subscribe to all changes in global store
-      const allKeys = Object.keys(globalStore);
-      allKeys.forEach(k => {
-        globalListeners[k] ||= new Set();
-        globalListeners[k].add(callback);
-      });
+      // Subscribe to every write (including future keys), not just keys that
+      // happen to exist at subscribe time.
+      globalSubscribers.add(callback);
       return () => {
-        allKeys.forEach(k => {
-          globalListeners[k]?.delete(callback);
-        });
+        globalSubscribers.delete(callback);
       };
     } else {
       globalListeners[key] ||= new Set();
       globalListeners[key].add(callback);
-      return () => globalListeners[key].delete(callback);
+      return () => {
+        globalListeners[key]?.delete(callback);
+      };
     }
   };
 
   const getSnapshot = () => {
     if (isSelector) {
-      return (keyOrSelector as Function)(globalStore);
+      const next = (keyOrSelector as Function)(globalStore);
+      // Only adopt the new value if it actually changed; otherwise keep the
+      // cached reference so useSyncExternalStore doesn't loop / warn.
+      if (!cacheRef.current.hasValue || !shallowEqual(cacheRef.current.value, next)) {
+        cacheRef.current = { value: next, hasValue: true };
+      }
+      return cacheRef.current.value;
     } else {
       if (!(key in globalStore) && options?.initialValue !== undefined) {
         globalStore[key] = options.initialValue;
@@ -96,10 +129,10 @@ export function useKeact(
     if (isSelector) {
       throw new Error('Cannot set value when using selector. Use direct key access instead.');
     }
-    
+
     const next = typeof val === "function" ? val(value) : val;
     globalStore[key] = next;
-    globalListeners[key]?.forEach((l) => l());
+    notify(key);
     exposeStoreToWindow();
   };
 
