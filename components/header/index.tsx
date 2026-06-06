@@ -35,6 +35,10 @@ export default function Header() {
                     { category }
                 </Link>)
             }
+
+            <Link href="/insights" className="text-s font-medium text-indigo-600 transition duration-300 hover:opacity-50">
+                insights
+            </Link>
         </div>
 
         <MobileMenu categories={categories} />
